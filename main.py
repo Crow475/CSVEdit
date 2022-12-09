@@ -6,15 +6,26 @@ class table:
         self.column_count = column_count
         self.row_count = row_count
         self.columns = {}
-        for column in range(1, column_count + 1):
+        for column in range(1, self.column_count + 1):
             column_alpha = alphabet[column - 1]
-            self.columns[column_alpha] = [None for i in range(1, row_count + 1)]
+            self.columns[column_alpha] = [None for i in range(1, self.row_count + 1)]
     
     def get_cell(self, column: str, row: int):
         return self.columns[column][row - 1]
 
     def set_cell(self, column: str, row: int, value):
         self.columns[column][row  - 1] = value
+
+    def add_column(self):
+        new_column_letter = alphabet[self.column_count]
+        self.columns[new_column_letter] = [None for i in range(1, self.row_count + 1)]
+        self.column_count += 1
+    
+    def add_row(self):
+        self.row_count += 1
+        for column in range(1, self.column_count + 1):
+            column_alpha = alphabet[column - 1]
+            self.columns[column_alpha].append(None)
 
     def __str__(self):
         return_string = ""
