@@ -35,6 +35,13 @@ class Table:
             column_alpha = alphabet[column - 1]
             self.columns[column_alpha].append(None)
 
+    def max_len(self, column: str):
+        longest = 1
+        for value in self.columns[column]:
+            if len(str(value)) > longest:
+                longest = len(str(value))
+        return longest
+
     def __str__(self):
         return_string = ""
         for i in range(1, self.row_count + 1):
