@@ -53,6 +53,29 @@ class Table:
             return_string = return_string + "\n"
         return return_string
 
+class Pointer():
+    def __init__(self, column_number, row):
+        self.column_number = column_number
+        self.row = row
+        self.update_column()
+
+    def update_column(self):
+        self.column = alphabet[self.column_number - 1]
+
+    def right(self):
+        self.column_number += 1
+        self.update_column()
+
+    def left(self):
+        self.column_number -= 1
+        self.update_column()
+
+    def down(self):
+        self.row += 1
+
+    def up(self):
+        self.row -= 1
+
 def file_opener(file_name):
     """Opens a csv file as a table object"""
     with open(file_name, encoding="utf-8") as file:
