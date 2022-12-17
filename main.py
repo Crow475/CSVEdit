@@ -36,6 +36,7 @@ class Table:
             self.columns[column_alpha].append(None)
 
     def max_len(self, column: str):
+        """Returns the maximum length of the values a column"""
         longest = 1
         for value in self.columns[column]:
             if len(str(value)) > longest:
@@ -60,20 +61,25 @@ class Pointer():
         self.update_column()
 
     def update_column(self):
+        """Updates the column letter"""
         self.column = alphabet[self.column_number - 1]
 
     def right(self):
+        """Moves the pointer one column right"""
         self.column_number += 1
         self.update_column()
 
     def left(self):
+        """Moves the pointer one column left"""
         self.column_number -= 1
         self.update_column()
 
     def down(self):
+        """Moves the pointer one row down"""
         self.row += 1
 
     def up(self):
+        """Moves the pointer one row up"""
         self.row -= 1
 
 def file_opener(file_name):
