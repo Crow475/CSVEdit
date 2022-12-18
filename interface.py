@@ -61,8 +61,8 @@ def main(scr):
                 x_display += 1
                 if x_display < width - 3 and x_alpha not in shown_collumns:
                     shown_collumns.append(x_alpha)
-            if y < height - 3:
-                shown_rows.append(y)
+            if y < height - 3 + y_shift:
+                shown_rows.append(y + 1)
         table_pad.noutrefresh(0, 0, 1, row_width, height - 3, width - 2)
 
     def update_columns():
@@ -85,22 +85,35 @@ def main(scr):
         if y + 1 < height - 3:
             row_spacer  = ' '
             for i in range(y + 1, height - 3):
-                row_pad.addstr(i, 0, row_spacer, curses.A_REVERSE)
+                row_pad.addstr(i, 0, f"{row_spacer:^{row_width}}", curses.A_REVERSE)
         row_pad.noutrefresh(0, 0, 1, 0, height - 3, row_width)
 
     def update_x():
         x_win = curses.newwin(1, row_width, 0, 0)
-        x_win.insstr(0, 0, f"{'X':^{row_width}}", curses.A_REVERSE)
+        if x_shift > 0 and y_shift > 0:
+            x_win.insstr(0, 0, f"{'X':^{row_width}}", curses.A_REVERSE)
+        elif x_shift > 0:
+            x_win.insstr(0, 0, f"{'<':^{row_width}}", curses.A_REVERSE)
+        elif y_shift > 0:
+            x_win.insstr(0, 0, f"{'^':^{row_width}}", curses.A_REVERSE)
+        else:
+            x_win.insstr(0, 0, f"{' ':^{row_width}}", curses.A_REVERSE)
         x_win.noutrefresh()
 
     def update_v():
         v_win = curses.newwin(1, row_width, height - 2, 0)
-        v_win.insstr(0, 0, f"{'V':^{row_width}}", curses.A_REVERSE)
+        if shown_rows[-1] != table.row_count:
+            v_win.insstr(0, 0, f"{'V':^{row_width}}", curses.A_REVERSE)
+        else:
+            v_win.insstr(0, 0, f"{' ':^{row_width}}", curses.A_REVERSE)
         v_win.noutrefresh()
 
     def update_r():
         r_win = curses.newwin(1, 2, 0, width - 1)
-        r_win.insstr(0, 0, ">", curses.A_REVERSE)
+        if shown_collumns[-1] != m.alphabet[table.column_count - 1]:
+            r_win.insstr(0, 0, ">", curses.A_REVERSE)
+        else:
+            r_win.insstr(0, 0, " ", curses.A_REVERSE)
         r_win.noutrefresh()
 
     def update_input():
@@ -125,6 +138,8 @@ def main(scr):
     while True:
         user_input = input_pad.getch()
         height, width = scr.getmaxyx()
+        if user_input == curses.KEY_F5:
+            update_all()
         if user_input == ord('q'):
             break
         if user_input == curses.KEY_RESIZE:
@@ -148,7 +163,7 @@ def main(scr):
             update_columns()
         if user_input == curses.KEY_DOWN and selector.row < table.row_count:
             selector.down()
-            if selector.row - 1 not in shown_rows:
+            if selector.row not in shown_rows:
                 y_shift += 1
             update_table()
             update_v()
@@ -156,7 +171,7 @@ def main(scr):
             update_rows()
         if user_input == curses.KEY_UP and selector.row > 1:
             selector.up()
-            if selector.row - 1 not in shown_rows:
+            if selector.row not in shown_rows:
                 y_shift -= 1
             update_table()
             update_v()
