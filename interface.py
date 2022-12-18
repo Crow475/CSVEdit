@@ -28,6 +28,9 @@ def main(scr):
     def update_info():
         info_keys = " [RETURN]:edit mode [Q]:quit "
         info_mode = " Mode: R "
+        if len(info_keys) + len(info_mode) >= width - 3:
+            info_keys = ''
+            info_mode = ''
         info_spacer_len = (width-3)-(len(info_keys)+len(info_mode))
         info_win = curses.newwin(2, width - 3, height - 2, 1)
         info_win.addstr(0, 0, f"{info_keys}{' ':^{info_spacer_len}}{info_mode}", curses.A_REVERSE)
