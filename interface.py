@@ -24,6 +24,7 @@ def main(scr):
     shown_rows = []
     x_shift = 0
     y_shift = 0
+    address = f"({selector.column:>3}:{selector.row:<3})"
 
     def update_info():
         info_keys = " [RETURN]:edit mode [Q]:quit "
@@ -32,7 +33,7 @@ def main(scr):
             info_keys = ''
             info_mode = ''
         info_spacer_len = (width-3)-(len(info_keys)+len(info_mode))
-        info_win = curses.newwin(2, width - 3, height - 2, 1)
+        info_win = curses.newwin(2, width - 2, height - 2, 1)
         info_win.addstr(0, 0, f"{info_keys}{' ':^{info_spacer_len}}{info_mode}", curses.A_REVERSE)
         info_win.noutrefresh()
 
@@ -117,7 +118,13 @@ def main(scr):
         r_win.noutrefresh()
 
     def update_input():
-        input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1)
+        input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1 - len(address))
+
+    def update_address():
+        address = f"({selector.column:>3}:{selector.row:<3})"
+        address_win = curses.newwin(1, len(address), height - 1, width - len(address))
+        address_win.insstr(0, 0, address, curses.A_REVERSE)
+        address_win.noutrefresh()
 
     def update_all():
         update_table()
@@ -128,6 +135,7 @@ def main(scr):
         update_columns()
         update_rows()
         update_input()
+        update_address()
 
     update_all()
     curses.doupdate()
@@ -153,6 +161,8 @@ def main(scr):
             update_r()
             update_x()
             update_columns()
+            update_address()
+            update_input()
         if user_input == curses.KEY_LEFT and selector.column_number > 1:
             selector.left()
             if selector.column not in shown_collumns:
@@ -161,6 +171,8 @@ def main(scr):
             update_r()
             update_x()
             update_columns()
+            update_address()
+            update_input()
         if user_input == curses.KEY_DOWN and selector.row < table.row_count:
             selector.down()
             if selector.row not in shown_rows:
@@ -169,6 +181,8 @@ def main(scr):
             update_v()
             update_x()
             update_rows()
+            update_address()
+            update_input()
         if user_input == curses.KEY_UP and selector.row > 1:
             selector.up()
             if selector.row not in shown_rows:
@@ -177,6 +191,8 @@ def main(scr):
             update_v()
             update_x()
             update_rows()
+            update_address()
+            update_input()
         sleep(0.01)
         curses.doupdate()
 
