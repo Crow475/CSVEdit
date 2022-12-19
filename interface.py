@@ -116,6 +116,8 @@ def main(scr):
         r_win.noutrefresh()
 
     def update_input():
+        input_pad.clear()
+        input_pad.addstr(0, 0, f"> {str(table.get_cell(selector.column, selector.row))}")
         input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1 - len(address))
 
     def update_address():
