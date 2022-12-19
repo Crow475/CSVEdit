@@ -19,7 +19,7 @@ def main(scr):
     row_pad = curses.newpad(100, row_width)
     input_pad = curses.newpad(1, 100)
 
-    selector = m.Pointer(1, 1) #pylint: disable=E1101
+    selector = m.Pointer(1, 1)
     shown_collumns = []
     shown_rows = []
     x_shift = 0
@@ -46,22 +46,21 @@ def main(scr):
             y = y + y_shift
             for x in range(table.column_count - x_shift):
                 x = x + x_shift
-                x_alpha = m.alphabet[x]
-                cell_display = table.get_cell(x_alpha, y + 1)
+                cell_display = table.get_cell(x + 1, y + 1)
                 if cell_display is None or cell_display == '':
-                    table.set_cell(x_alpha, y + 1, '-')
-                    cell_display = table.get_cell(x_alpha, y + 1)
+                    table.set_cell(x + 1, y + 1, '-')
+                    cell_display = table.get_cell(x + 1, y + 1)
                 cell_display = cell_display.strip()
-                cell_display = f" {str(cell_display):^{table.max_len(x_alpha)}} " #pylint: disable=E1101
+                cell_display = f" {str(cell_display):^{table.max_len(x + 1)}} "
                 if selector.column_number == x + 1 and selector.row == y + 1:
                     table_pad.addstr(y - y_shift, x_display, cell_display, curses.A_BLINK)
                 else:
                     table_pad.addstr(y - y_shift, x_display, cell_display)
-                x_display = x_display + table.max_len(x_alpha) + 2 #pylint: disable=E1101
+                x_display = x_display + table.max_len(x + 1) + 2
                 table_pad.addstr(y - y_shift, x_display, '|')
                 x_display += 1
-                if x_display < width - 3 and x_alpha not in shown_collumns:
-                    shown_collumns.append(x_alpha)
+                if x_display < width - 3 and m.get_column(x + 1) not in shown_collumns:
+                    shown_collumns.append(m.get_column(x + 1))
             if y < height - 3 + y_shift:
                 shown_rows.append(y + 1)
         table_pad.noutrefresh(0, 0, 1, row_width, height - 3, width - 2)
@@ -70,10 +69,9 @@ def main(scr):
         x_display = 0
         for x in range(table.column_count - x_shift):
             x = x + x_shift
-            x_alpha  = m.alphabet[x]
-            column_name = f" {str(x_alpha):^{table.max_len(x_alpha)}} |" #pylint: disable=E1101
+            column_name = f" {str(m.get_column(x + 1)):^{table.max_len(x + 1)}} |"
             column_pad.addstr(0, x_display, column_name, curses.A_REVERSE)
-            x_display = x_display + table.max_len(x_alpha) + 3 #pylint: disable=E1101
+            x_display = x_display + table.max_len(x + 1) + 3
         if x_display < width - 2:
             column_spacer = ' ' * ((width - 2) - x_display)
             column_pad.addstr(0, x_display, column_spacer, curses.A_REVERSE)
@@ -111,7 +109,7 @@ def main(scr):
 
     def update_r():
         r_win = curses.newwin(1, 2, 0, width - 1)
-        if shown_collumns[-1] != m.alphabet[table.column_count - 1]:
+        if shown_collumns[-1] != m.get_column(table.column_count):
             r_win.insstr(0, 0, ">", curses.A_REVERSE)
         else:
             r_win.insstr(0, 0, " ", curses.A_REVERSE)

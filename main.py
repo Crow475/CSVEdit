@@ -1,5 +1,10 @@
 import csv
-alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+def get_column(column):
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    if type(column) == str and column.isalpha():
+        return column
+    return alphabet[column - 1]
 
 class Table:
     """
@@ -11,20 +16,19 @@ class Table:
         self.row_count = row_count
         self.columns = {}
         for column in range(1, self.column_count + 1):
-            column_alpha = alphabet[column - 1]
-            self.columns[column_alpha] = [None for i in range(1, self.row_count + 1)]
+            self.columns[get_column(column)] = [None for i in range(1, self.row_count + 1)]
 
-    def get_cell(self, column: str, row: int):
+    def get_cell(self, column, row: int):
         """Returns the value stored in a cell"""
-        return self.columns[column][row - 1]
+        return self.columns[get_column(column)][row - 1]
 
-    def set_cell(self, column: str, row: int, value):
+    def set_cell(self, column, row: int, value):
         """Sets the value of a cell"""
-        self.columns[column][row  - 1] = value
+        self.columns[get_column(column)][row  - 1] = value
 
     def add_column(self):
         """Adds an empty column to the right of the table"""
-        new_column_letter = alphabet[self.column_count]
+        new_column_letter = get_column(self.column_count + 1)
         self.columns[new_column_letter] = [None for i in range(1, self.row_count + 1)]
         self.column_count += 1
 
@@ -32,13 +36,12 @@ class Table:
         """Adds an empty row to the bottom of the table"""
         self.row_count += 1
         for column in range(1, self.column_count + 1):
-            column_alpha = alphabet[column - 1]
-            self.columns[column_alpha].append(None)
+            self.columns[get_column(column)].append(None)
 
-    def max_len(self, column: str):
+    def max_len(self, column):
         """Returns the maximum length of the values a column"""
         longest = 1
-        for value in self.columns[column]:
+        for value in self.columns[get_column(column)]:
             if len(str(value)) > longest:
                 longest = len(str(value))
         return longest
@@ -48,9 +51,8 @@ class Table:
         for i in range(1, self.row_count + 1):
             return_string = return_string + " | "
             for j in range(1, self.column_count + 1):
-                j_alpha = alphabet[j - 1]
                 return_string = (return_string
-                + str(self.get_cell(j_alpha, i)) + " | ")
+                + str(self.get_cell(j, i)) + " | ")
             return_string = return_string + "\n"
         return return_string
 
@@ -62,7 +64,7 @@ class Pointer():
 
     def update_column(self):
         """Updates the column letter"""
-        self.column = alphabet[self.column_number - 1]
+        self.column = get_column(self.column_number)
 
     def right(self):
         """Moves the pointer one column right"""
@@ -100,7 +102,6 @@ def file_opener(file_name):
         for row in filereader:
             current_row += 1
             for column, value in enumerate(row):
-                column_alpha = alphabet[column]
-                return_table.set_cell(column_alpha, current_row, value)
+                return_table.set_cell(column + 1, current_row, value)
 
     return return_table
