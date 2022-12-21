@@ -105,3 +105,15 @@ def file_opener(file_name):
                 return_table.set_cell(column + 1, current_row, value)
 
     return return_table
+
+def file_save(table: Table, file_name):
+    with open(file_name, "w", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        for row in range (1, table.row_count + 1):
+            row_out = []
+            for column in range (1, table.column_count + 1):
+                if table.get_cell(column, row) is None or table.get_cell(column, row) == 'None':
+                    row_out.append('')
+                else:
+                    row_out.append(table.get_cell(column, row))
+            writer.writerow(row_out)
