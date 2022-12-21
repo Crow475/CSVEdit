@@ -1,10 +1,20 @@
 #!/usr/bin/python3
 import curses
 import sys
+import os
 from time import sleep
 import main as m
 
-table = m.file_opener(sys.argv[1])
+try:
+    table = m.file_opener(sys.argv[1])
+except FileNotFoundError:
+    print(f"[Error] No such file: '{sys.argv[1]}'")
+    sys.exit(1)
+except PermissionError:
+    print(f"[Error] Access denied: '{sys.argv[1]}'")
+    sys.exit(2)
+
+read_only = not os.access(sys.argv[1], os.W_OK)
 
 def main(scr):
     scr.keypad(True)
@@ -27,7 +37,10 @@ def main(scr):
     address = f"({selector.column:>3}:{selector.row:<3})"
 
     def update_info():
-        info_keys = " [RETURN]:edit mode [Q]:quit "
+        if read_only:
+            info_keys = " [q]:quit "
+        else:
+            info_keys = " [RETURN]:edit mode [q]:quit "
         info_mode = " Mode: R "
         if len(info_keys) + len(info_mode) >= width - 3:
             info_keys = ''
