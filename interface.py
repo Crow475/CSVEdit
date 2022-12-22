@@ -61,8 +61,7 @@ def main(scr):
                 x = x + x_shift
                 cell_display = table.get_cell(x + 1, y + 1)
                 if cell_display is None or cell_display == '':
-                    table.set_cell(x + 1, y + 1, '-')
-                    cell_display = table.get_cell(x + 1, y + 1)
+                    cell_display = "-"
                 cell_display = cell_display.strip()
                 cell_display = f" {str(cell_display):^{table.max_len(x + 1)}} "
                 if selector.column_number == x + 1 and selector.row == y + 1:
