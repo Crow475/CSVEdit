@@ -2,19 +2,25 @@
 import curses
 import sys
 import os
+import argparse
 from time import sleep
 import main as m
 
+argument_parser = argparse.ArgumentParser()
+
+argument_parser.add_argument("file_name", help="path to the file", type=str)
+arguments = argument_parser.parse_args()
+
 try:
-    table = m.file_opener(sys.argv[1])
+    table = m.file_opener(arguments.file_name)
 except FileNotFoundError:
-    print(f"[Error] No such file: '{sys.argv[1]}'")
+    print(f"[Error] No such file: '{arguments.file_name}'")
     sys.exit(1)
 except PermissionError:
-    print(f"[Error] Access denied: '{sys.argv[1]}'")
+    print(f"[Error] Access denied: '{arguments.file_name}'")
     sys.exit(2)
 
-read_only = not os.access(sys.argv[1], os.W_OK)
+read_only = not os.access(arguments.file_name, os.W_OK)
 
 def main(scr):
     scr.keypad(True)
