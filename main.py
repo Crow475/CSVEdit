@@ -1,5 +1,4 @@
 import csv
-from dialect_params_lister import list_params
 
 auto_dialect_name = 'default'
 valid_delimeters = ',;|\t'
@@ -121,7 +120,6 @@ def file_save(table: Table, file_name):
     """Saves a table object as a csv file"""
     with open(file_name, "w", encoding="utf-8") as file:
         writer = csv.writer(file, dialect=table.dialect)
-        list_params(csv.get_dialect(auto_dialect_name))
         csv.unregister_dialect(auto_dialect_name)
         for row in range (1, table.row_count + 1):
             row_out = []
