@@ -1,0 +1,12 @@
+def list_params(dia):
+    print(f"| {'Parameters of `' + str(dia) + '` dialect:' :<34} |")
+    print(f"| {'-' :<34} |")
+    print(f"{'| Delimeter:':<25} {dia.delimiter :^10} |")
+    print(f"{'| Double quote:':<25} {dia.doublequote :^10} |")
+    print(f"{'| Escape char:':<25} {repr(dia.escapechar) :^10} |")
+    print(f"{'| Line terminator:':<25} {repr(dia.lineterminator) :^10} |")
+    print(f"{'| Quote char:':<25} {dia.quotechar :^10} |")
+    print(f"{'| Quoting:':<25} {dia.quoting :^10} |")
+    print(f"{'| Skip initial space:':<25} {dia.skipinitialspace :^10} |")
+    print(f"{'| Strict:':<25} {dia.strict :^10} |")
+    print(f"| {'-' * 34} |")

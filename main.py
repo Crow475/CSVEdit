@@ -1,4 +1,8 @@
 import csv
+from dialect_params_lister import list_params
+
+auto_dialect_name = 'default'
+valid_delimeters = ',;|\t'
 
 def get_column(column):
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -12,6 +16,7 @@ class Table:
     limited to 26 columns (for now)
     """
     def __init__(self, column_count, row_count):
+        self.dialect = ''
         self.column_count = column_count
         self.row_count = row_count
         self.columns = {}
@@ -87,15 +92,21 @@ class Pointer():
 def file_opener(file_name):
     """Opens a csv file as a table object"""
     with open(file_name, encoding="utf-8") as file:
-        filereader = csv.reader(file)
+        dialect = csv.Sniffer().sniff(file.read(), delimiters=valid_delimeters)
+        csv.register_dialect(auto_dialect_name, dialect)
+
+        filereader = csv.reader(file, dialect)
         max_rows = 0
         max_columns = 0
+
+        file.seek(0)
         for row in filereader:
             if len(row) > max_columns:
                 max_columns = len(row)
             max_rows = max_rows + 1
 
         return_table = Table(max_columns, max_rows)
+        return_table.dialect = auto_dialect_name
 
         file.seek(0)
         current_row = 0
@@ -107,8 +118,11 @@ def file_opener(file_name):
     return return_table
 
 def file_save(table: Table, file_name):
+    """Saves a table object as a csv file"""
     with open(file_name, "w", encoding="utf-8") as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, dialect=table.dialect)
+        list_params(csv.get_dialect(auto_dialect_name))
+        csv.unregister_dialect(auto_dialect_name)
         for row in range (1, table.row_count + 1):
             row_out = []
             for column in range (1, table.column_count + 1):
