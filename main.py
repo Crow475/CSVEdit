@@ -1,9 +1,18 @@
 import csv
 
+# Default name of the dialect that is sniffed from a file
 auto_dialect_name = 'default'
+
+# Symbols that sniffer can use as delimeters
+# Default: ',;|\t'
 valid_delimeters = ',;|\t'
 
 def get_column(column):
+    """
+    Function that returns alpha name of a column
+    from its numerical representation
+    """
+
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     if type(column) == str and column.isalpha():
         return column
@@ -15,6 +24,8 @@ class Table:
     limited to 26 columns (for now)
     """
     def __init__(self, column_count, row_count):
+        # Creates an empty (filled with None values) table with
+        # [row_count] rows and [column_count] columns and no dialect
         self.dialect = ''
         self.column_count = column_count
         self.row_count = row_count
@@ -51,6 +62,8 @@ class Table:
         return longest
 
     def __str__(self):
+        # Crudely represents table as a string by
+        # separating cells with '|' symbol
         return_string = ""
         for i in range(1, self.row_count + 1):
             return_string = return_string + " | "
@@ -61,7 +74,12 @@ class Table:
         return return_string
 
 class Pointer():
+    """
+    A class that defines a pointer for the interface.
+    It has its own coordinates and methods of moving.
+    """
     def __init__(self, column_number, row):
+        # Creates a pointer with set coordinates
         self.column_number = column_number
         self.row = row
         self.update_column()
@@ -91,23 +109,30 @@ class Pointer():
 def file_opener(file_name):
     """Opens a csv file as a table object"""
     with open(file_name, encoding="utf-8") as file:
-        dialect = csv.Sniffer().sniff(file.read(), delimiters=valid_delimeters)
+        # Determine the dialect of the file and register it
+        dialect = csv.Sniffer().sniff(file.readline(), delimiters=valid_delimeters)
         csv.register_dialect(auto_dialect_name, dialect)
 
+        file.seek(0)
+
         filereader = csv.reader(file, dialect)
+
+        # Determine the number of columns and row in the file
+        # to create a table based on it
         max_rows = 0
         max_columns = 0
-
-        file.seek(0)
         for row in filereader:
             if len(row) > max_columns:
                 max_columns = len(row)
             max_rows = max_rows + 1
 
+        # Create emty table and set its dialect
         return_table = Table(max_columns, max_rows)
         return_table.dialect = auto_dialect_name
 
         file.seek(0)
+
+        # Fill the table with data from the file
         current_row = 0
         for row in filereader:
             current_row += 1
@@ -120,7 +145,6 @@ def file_save(table: Table, file_name):
     """Saves a table object as a csv file"""
     with open(file_name, "w", encoding="utf-8") as file:
         writer = csv.writer(file, dialect=table.dialect)
-        csv.unregister_dialect(auto_dialect_name)
         for row in range (1, table.row_count + 1):
             row_out = []
             for column in range (1, table.column_count + 1):
@@ -129,3 +153,4 @@ def file_save(table: Table, file_name):
                 else:
                     row_out.append(table.get_cell(column, row))
             writer.writerow(row_out)
+        csv.unregister_dialect(auto_dialect_name)

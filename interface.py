@@ -3,7 +3,6 @@ import curses
 import sys
 import os
 import argparse
-from time import sleep
 import main as m
 
 argument_parser = argparse.ArgumentParser()
@@ -211,7 +210,6 @@ def main(scr):
             update_rows()
             update_address()
             update_input()
-        sleep(0.01)
         curses.doupdate()
 
 curses.wrapper(main)
