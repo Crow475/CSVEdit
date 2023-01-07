@@ -45,12 +45,12 @@ def main(scr):
         if read_only:
             info_keys = " [q]:quit "
         else:
-            info_keys = " [RETURN]:edit mode [q]:quit "
-        info_mode = " Mode: R "
+            info_keys = " [RETURN]:edit [q]:quit "
+        info_mode = " Mode: "
         if len(info_keys) + len(info_mode) >= width - 3:
             info_keys = ''
             info_mode = ''
-        info_spacer_len = (width-3)-(len(info_keys)+len(info_mode))
+        info_spacer_len = (width-2)-(len(info_keys)+len(info_mode))
         info_win = curses.newwin(2, width - 2, height - 2, 1)
         info_win.addstr(0, 0, f"{info_keys}{' ':^{info_spacer_len}}{info_mode}", curses.A_REVERSE)
         info_win.noutrefresh()
@@ -81,6 +81,16 @@ def main(scr):
             if y < height - 3 + y_shift:
                 shown_rows.append(y + 1)
         table_pad.noutrefresh(0, 0, 1, row_width, height - 3, width - 2)
+
+    def update_indicator():
+        indicator_win = curses.newwin(height - 2, 2, 1, width - 1)
+        for i in range(0, height - 3):
+            indicator_win.addstr(i, 0, " ", curses.A_REVERSE)
+        if read_only:
+            indicator_win.addstr(height - 3, 0, "R", curses.A_REVERSE + curses.A_UNDERLINE)
+        else:
+            indicator_win.addstr(height - 3, 0, "R", curses.A_REVERSE)
+        indicator_win.noutrefresh()
 
     def update_columns():
         x_display = 0
@@ -153,6 +163,7 @@ def main(scr):
         update_rows()
         update_input()
         update_address()
+        update_indicator()
 
     update_all()
     curses.doupdate()
