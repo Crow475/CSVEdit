@@ -5,6 +5,8 @@ import os
 import argparse
 import main as m
 
+from curses import textpad
+
 argument_parser = argparse.ArgumentParser()
 
 argument_parser.add_argument("file_name", help="path to the file", type=str)
@@ -40,6 +42,8 @@ def main(scr):
     x_shift = 0
     y_shift = 0
     address = f"({selector.column:>3}:{selector.row:<3})"
+
+    mode = 'R'
 
     def update_info():
         if read_only:
@@ -84,12 +88,13 @@ def main(scr):
 
     def update_indicator():
         indicator_win = curses.newwin(height - 2, 2, 1, width - 1)
-        for i in range(0, height - 3):
-            indicator_win.addstr(i, 0, " ", curses.A_REVERSE)
+        indicators = f"{' ':<{height - 3}}"
+        for index, symbol in enumerate(indicators):
+            indicator_win.addstr(index, 0, symbol, curses.A_REVERSE)
         if read_only:
             indicator_win.addstr(height - 3, 0, "R", curses.A_REVERSE + curses.A_UNDERLINE)
         else:
-            indicator_win.addstr(height - 3, 0, "R", curses.A_REVERSE)
+            indicator_win.addstr(height - 3, 0, mode, curses.A_REVERSE)
         indicator_win.noutrefresh()
 
     def update_columns():
@@ -146,6 +151,13 @@ def main(scr):
         input_pad.clear()
         input_pad.addstr(0, 0, f"> {str(table.get_cell(selector.column, selector.row))}")
         input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1 - len(address))
+
+    def edit():
+        input_win = curses.newwin(1, width - len(address) - 2, height - 1, 2)
+        input_win.addstr(0, 0, f"{str(table.get_cell(selector.column, selector.row))}")
+        input_win.noutrefresh()
+        input_box = textpad.Textbox(input_win)
+        return input_box.edit()
 
     def update_address():
         address = f"({selector.column:>3}:{selector.row:<3})"
@@ -221,6 +233,15 @@ def main(scr):
             update_rows()
             update_address()
             update_input()
+        if user_input == curses.KEY_ENTER or user_input == 10 or user_input == 13:
+            if not read_only and mode == 'R':
+                mode = 'E'
+                update_indicator()
+                update_input()
+                table.set_cell(selector.column, selector.row, edit())
+                mode = 'R'
+                update_indicator()
+                update_table()
         curses.doupdate()
 
 curses.wrapper(main)
