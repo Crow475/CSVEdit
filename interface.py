@@ -43,7 +43,19 @@ def main(scr):
     y_shift = 0
     address = f"({selector.column:>3}:{selector.row:<3})"
 
+    dialect = table.dialect
+    
     mode = 'R'
+    
+    if dialect.quoting == 0:
+        quoting_ind = 'M'
+    if dialect.quoting == 1:
+        quoting_ind = 'A'
+    if dialect.quoting == 2:
+        quoting_ind = 'L'
+    if dialect.quoting == 3:
+        quoting_ind = 'N'
+
 
     def update_info():
         if read_only:
@@ -88,7 +100,9 @@ def main(scr):
 
     def update_indicator():
         indicator_win = curses.newwin(height - 2, 2, 1, width - 1)
-        indicators = f"{' ':<{height - 3}}"
+        indicators = ''
+        indicators += quoting_ind
+        indicators = f"{indicators:<{height - 3}}"
         for index, symbol in enumerate(indicators):
             indicator_win.addstr(index, 0, symbol, curses.A_REVERSE)
         if read_only:

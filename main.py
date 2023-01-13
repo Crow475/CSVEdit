@@ -1,4 +1,5 @@
 import csv
+from quotesniff import sniff_quoting
 
 # Default name of the dialect that is sniffed from a file
 auto_dialect_name = 'default'
@@ -26,7 +27,7 @@ class Table:
     def __init__(self, column_count, row_count):
         # Creates an empty (filled with None values) table with
         # [row_count] rows and [column_count] columns and no dialect
-        self.dialect = ''
+        self.dialect = None
         self.column_count = column_count
         self.row_count = row_count
         self.columns = {}
@@ -111,6 +112,7 @@ def file_opener(file_name):
     with open(file_name, encoding="utf-8") as file:
         # Determine the dialect of the file and register it
         dialect = csv.Sniffer().sniff(file.readline(), delimiters=valid_delimeters)
+        dialect.quoting = sniff_quoting(file_name, dialect)
         csv.register_dialect(auto_dialect_name, dialect)
 
         file.seek(0)
@@ -128,7 +130,7 @@ def file_opener(file_name):
 
         # Create emty table and set its dialect
         return_table = Table(max_columns, max_rows)
-        return_table.dialect = auto_dialect_name
+        return_table.dialect = csv.get_dialect(auto_dialect_name)
 
         file.seek(0)
 

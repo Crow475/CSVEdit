@@ -17,7 +17,7 @@ def sniff_quoting(file_name, dialect = None, quotechar = None, delimiter = None)
             delimiter = dialect.delimiter
 
         file.seek(0)
-        file_reader = csv.reader(file, dialect, delimiter)
+        file_reader = csv.reader(file, dialect, delimiter=delimiter)
         for row in file_reader:
             for value in row:
                 cells.append(value)
