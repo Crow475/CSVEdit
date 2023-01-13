@@ -42,10 +42,10 @@ def sniff_quoting(file_name, dialect = None, quotechar = None, delimiter = None)
 
     if len(cells) == len(quoted_values):
         return csv.QUOTE_ALL
-    if len(quoted_values) == non_numeric and len(quoted_values) != 0:
-        return csv.QUOTE_NONNUMERIC
     if len(quoted_values) == with_delimiter and len(quoted_values) != 0:
         return csv.QUOTE_MINIMAL
+    if len(quoted_values) == non_numeric and len(quoted_values) != 0:
+        return csv.QUOTE_NONNUMERIC
     if dialect.escapechar:
         return csv.QUOTE_NONE
     return csv.QUOTE_MINIMAL

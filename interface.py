@@ -83,8 +83,8 @@ def main(scr):
                 cell_display = table.get_cell(x + 1, y + 1)
                 if cell_display is None or cell_display == '':
                     cell_display = "-"
-                cell_display = cell_display.strip()
-                cell_display = f" {str(cell_display):^{table.max_len(x + 1)}} "
+                cell_display = str(cell_display).strip()
+                cell_display = f" {cell_display:^{table.max_len(x + 1)}} "
                 if selector.column_number == x + 1 and selector.row == y + 1:
                     table_pad.addstr(y - y_shift, x_display, cell_display, curses.A_BLINK)
                 else:
