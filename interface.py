@@ -28,6 +28,7 @@ def main(scr):
     scr.keypad(True)
     scr.clear()
     curses.curs_set(False)
+    curses.halfdelay(1)
 
     row_width = len(str(table.row_count))
 
@@ -45,6 +46,17 @@ def main(scr):
     address = f"({selector.column:>3}:{selector.row:<3})"
 
     mode = 'R'
+    info = None
+    changes = False
+
+    def save_as():
+        nonlocal info
+        info = "Save as:"
+        update_all()
+        m.file_save(table, edit(arguments.file_name))
+        info = None
+        update_all()
+
 
     def get_quoting_ind(quoting):
         if quoting == 0:
@@ -58,18 +70,26 @@ def main(scr):
         return ' '
 
 
-    def update_info():
+    def update_info(info_message: str = None):
+
         if read_only:
             info_keys = " [q]:quit "
         else:
             info_keys = " [RETURN]:edit [q]:quit "
+
         info_mode = " Mode: "
-        if len(info_keys) + len(info_mode) >= width - 3:
-            info_keys = ''
-            info_mode = ''
-        info_spacer_len = (width-2)-(len(info_keys)+len(info_mode))
+
+        if not info_message:
+            info_message = info_keys + info_mode
+            info_spacer_len = (width-2)-(len(info_message))
+            if info_spacer_len > 0:
+                info_message = f"{info_keys}{' ':^{info_spacer_len}}{info_mode}"
+
+        if len(info_message) >= width - 1:
+            info_message = ' '
+
         info_win = curses.newwin(2, width - 2, height - 2, 1)
-        info_win.addstr(0, 0, f"{info_keys}{' ':^{info_spacer_len}}{info_mode}", curses.A_REVERSE)
+        info_win.addstr(0, 0, f"{info_message:<{width - 2}}", curses.A_REVERSE)
         info_win.noutrefresh()
 
     def update_table():
@@ -167,12 +187,12 @@ def main(scr):
         input_pad.addstr(0, 0, f"> {str(table.get_cell(selector.column, selector.row))}")
         input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1 - len(address))
 
-    def edit():
+    def edit(target):
         input_win = curses.newwin(1, width - len(address) - 2, height - 1, 2)
-        input_win.addstr(0, 0, f"{str(table.get_cell(selector.column, selector.row))}")
+        input_win.addstr(0, 0, f"{str(target)}")
         input_win.noutrefresh()
         input_box = textpad.Textbox(input_win)
-        return input_box.edit()
+        return str(input_box.edit()).strip()
 
     def update_address():
         address = f"({selector.column:>3}:{selector.row:<3})"
@@ -185,7 +205,7 @@ def main(scr):
         update_x()
         update_v()
         update_r()
-        update_info()
+        update_info(info)
         update_columns()
         update_rows()
         update_input()
@@ -204,6 +224,8 @@ def main(scr):
         if user_input == curses.KEY_F5:
             update_all()
         if user_input == ord('q'):
+            if changes:
+                save_as()
             break
         if user_input == curses.KEY_RESIZE:
             height, width = scr.getmaxyx()
@@ -253,7 +275,8 @@ def main(scr):
                 mode = 'E'
                 update_indicator()
                 update_input()
-                table.set_cell(selector.column, selector.row, edit())
+                table.set_cell(selector.column, selector.row, edit(table.get_cell(selector.column, selector.row)))
+                changes = True
                 mode = 'R'
                 update_indicator()
                 update_table()
