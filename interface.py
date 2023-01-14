@@ -3,9 +3,10 @@ import curses
 import sys
 import os
 import argparse
-import main as m
 
 from curses import textpad
+
+import main as m
 
 argument_parser = argparse.ArgumentParser()
 
@@ -43,18 +44,18 @@ def main(scr):
     y_shift = 0
     address = f"({selector.column:>3}:{selector.row:<3})"
 
-    dialect = table.dialect
-    
     mode = 'R'
-    
-    if dialect.quoting == 0:
-        quoting_ind = 'M'
-    if dialect.quoting == 1:
-        quoting_ind = 'A'
-    if dialect.quoting == 2:
-        quoting_ind = 'L'
-    if dialect.quoting == 3:
-        quoting_ind = 'N'
+
+    def get_quoting_ind(quoting):
+        if quoting == 0:
+            return 'M'
+        if quoting == 1:
+            return 'A'
+        if quoting == 2:
+            return 'L'
+        if quoting == 3:
+            return 'N'
+        return ' '
 
 
     def update_info():
@@ -101,7 +102,7 @@ def main(scr):
     def update_indicator():
         indicator_win = curses.newwin(height - 2, 2, 1, width - 1)
         indicators = ''
-        indicators += quoting_ind
+        indicators += get_quoting_ind(table.dialect.quoting)
         indicators = f"{indicators:<{height - 3}}"
         for index, symbol in enumerate(indicators):
             indicator_win.addstr(index, 0, symbol, curses.A_REVERSE)
@@ -247,7 +248,7 @@ def main(scr):
             update_rows()
             update_address()
             update_input()
-        if user_input == curses.KEY_ENTER or user_input == 10 or user_input == 13:
+        if user_input in (curses.KEY_ENTER, 10, 13):
             if not read_only and mode == 'R':
                 mode = 'E'
                 update_indicator()
