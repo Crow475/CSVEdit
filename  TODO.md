@@ -1,0 +1,50 @@
+- [x] automatic csv dialect detection 
+- [x] moving pointer
+- [ ] indicator sidebar
+	- [x] mode indication
+	- [x] dialect indication
+	- [x] prompt indication 
+	- [ ] header display indication 
+- [ ] input field
+	- [ ] text wrapping 
+- [ ] info bar
+	- [x] edit key
+	- [x] exit key
+	- [ ] save key 
+	- [ ] save as key
+	- [ ] add row
+	- [ ] remove row
+	- [ ] add column
+	- [ ] remove column 
+- [ ] custom textbox
+	- [ ] scrolling 
+	- [ ] cursor highlight 
+	- [ ] backspace 
+	- [ ] enter
+	- [ ] escape 
+- [x] pointer position indicator
+- [x] csv file saving
+- [x] scrolling the table pad
+- [x] scrollable table indicators
+- [ ] cell text wrapping
+- [ ] add/remove rows and columns
+- [ ] reading settings file
+- [ ] clipboard Integration 
+- [ ] settings file
+	- [ ] pointer style 
+	- [ ] visual column delimeters (on/off)
+	- [ ] ? Key bindings
+	- [ ] default dialect
+	- [ ] auto remove last rows and columns if empty 
+	- [ ] header display (on/off)
+	- [ ] mutable/immutable headers
+- [ ] optional arguments 
+	- [ ] specifying dialect 
+	- [ ] verbose 
+	- [ ] read-only
+	- [ ] extended info bar
+	- [ ] default settings (safe mode)
+	- [ ] force mutable headers (only if they are immutable by default)
+- [ ] header display 
+
+
