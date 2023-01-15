@@ -1,9 +1,6 @@
 import csv
 from quotesniff import sniff_quoting
 
-# Default name of the dialect that is sniffed from a file
-auto_dialect_name = 'default'
-
 # Symbols that sniffer can use as delimeters
 # Default: ',;|\t'
 valid_delimeters = ',;|\t'
@@ -113,7 +110,6 @@ def file_opener(file_name):
         # Determine the dialect of the file and register it
         dialect = csv.Sniffer().sniff(file.readline(), delimiters=valid_delimeters)
         dialect.quoting = sniff_quoting(file_name, dialect)
-        csv.register_dialect(auto_dialect_name, dialect)
 
         file.seek(0)
 
@@ -130,7 +126,7 @@ def file_opener(file_name):
 
         # Create emty table and set its dialect
         return_table = Table(max_columns, max_rows)
-        return_table.dialect = csv.get_dialect(auto_dialect_name)
+        return_table.dialect = dialect
 
         file.seek(0)
 
@@ -155,4 +151,3 @@ def file_save(table: Table, file_name):
                 else:
                     row_out.append(table.get_cell(column, row))
             writer.writerow(row_out)
-        csv.unregister_dialect(auto_dialect_name)

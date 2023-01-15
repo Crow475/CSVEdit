@@ -46,17 +46,31 @@ def main(scr):
     address = f"({selector.column:>3}:{selector.row:<3})"
 
     mode = 'R'
-    info = None
+    alert = None
     changes = False
+
+    info = {'message':None,
+            'mode':False
+           }
+
+    key_hint = {'edit':' [RETURN]:edit',
+                'confirm':' [RETURN]:confirm',
+                'quit':' [q]:quit',
+                'cancel':' [^j]:cancel',
+                'update':' [f5]:update',
+               }
 
     def save_as():
         nonlocal info
-        info = "Save as:"
+        nonlocal alert
+        info['message'] = "Save as: " + key_hint["confirm"] + key_hint["cancel"]
+        info['mode'] = False
+        alert = "?"
         update_all()
         m.file_save(table, edit(arguments.file_name))
-        info = None
+        info['message'] = None
+        alert = None
         update_all()
-
 
     def get_quoting_ind(quoting):
         if quoting == 0:
@@ -69,21 +83,23 @@ def main(scr):
             return 'N'
         return ' '
 
-
-    def update_info(info_message: str = None):
-
-        if read_only:
-            info_keys = " [q]:quit "
-        else:
-            info_keys = " [RETURN]:edit [q]:quit "
+    def update_info(info_message: str = None, show_mode: bool = False):
 
         info_mode = " Mode: "
 
+        if read_only:
+            info_keys = key_hint["quit"] + " "
+        else:
+            info_keys = key_hint["edit"] + key_hint["quit"] + " "
+
         if not info_message:
-            info_message = info_keys + info_mode
-            info_spacer_len = (width-2)-(len(info_message))
+            info_message = info_keys
+            show_mode = True
+
+        if show_mode:
+            info_spacer_len = (width-2)-(len(info_message) + len(info_mode))
             if info_spacer_len > 0:
-                info_message = f"{info_keys}{' ':^{info_spacer_len}}{info_mode}"
+                info_message = f"{info_message}{' ':^{info_spacer_len}}{info_mode}"
 
         if len(info_message) >= width - 1:
             info_message = ' '
@@ -122,6 +138,8 @@ def main(scr):
     def update_indicator():
         indicator_win = curses.newwin(height - 2, 2, 1, width - 1)
         indicators = ''
+        if alert:
+            indicators += alert
         indicators += get_quoting_ind(table.dialect.quoting)
         indicators = f"{indicators:<{height - 3}}"
         for index, symbol in enumerate(indicators):
@@ -205,7 +223,7 @@ def main(scr):
         update_x()
         update_v()
         update_r()
-        update_info(info)
+        update_info(info["message"], info["mode"])
         update_columns()
         update_rows()
         update_input()
@@ -227,6 +245,9 @@ def main(scr):
             if changes:
                 save_as()
             break
+        if user_input == ord('s'):
+            save_as()
+            changes = False
         if user_input == curses.KEY_RESIZE:
             height, width = scr.getmaxyx()
             update_all()
@@ -273,13 +294,19 @@ def main(scr):
         if user_input in (curses.KEY_ENTER, 10, 13):
             if not read_only and mode == 'R':
                 mode = 'E'
+                info["message"] = key_hint["confirm"] + key_hint["cancel"]
+                info["mode"] = True
+                update_info(info["message"], info["mode"])
                 update_indicator()
                 update_input()
-                table.set_cell(selector.column, selector.row, edit(table.get_cell(selector.column, selector.row)))
+                update_address()
+                change = edit(table.get_cell(selector.column, selector.row))
+                table.set_cell(selector.column, selector.row, change)
                 changes = True
+                info["message"] = None
+                info["mode"] = False
                 mode = 'R'
-                update_indicator()
-                update_table()
+                update_all()
         curses.doupdate()
 
 curses.wrapper(main)
