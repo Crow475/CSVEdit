@@ -3,8 +3,7 @@ import curses
 import sys
 import os
 import argparse
-
-from curses import textpad
+import inputfield
 
 import main as m
 
@@ -23,6 +22,7 @@ except PermissionError:
     sys.exit(2)
 
 read_only = not os.access(arguments.file_name, os.W_OK)
+absolute_path = os.path.abspath(arguments.file_name)
 
 def main(scr):
     scr.keypad(True)
@@ -37,6 +37,7 @@ def main(scr):
     column_pad = curses.newpad(1, 200)
     row_pad = curses.newpad(100, row_width)
     input_pad = curses.newpad(1, 100)
+    input_win = curses.newwin(1, width - 9 - 2, height - 1, 2)
 
     selector = m.Pointer(1, 1)
     shown_collumns = []
@@ -56,7 +57,7 @@ def main(scr):
     key_hint = {'edit':' [RETURN]:edit',
                 'confirm':' [RETURN]:confirm',
                 'quit':' [q]:quit',
-                'cancel':' [^j]:cancel',
+                'cancel':' [esc]:cancel',
                 'update':' [f5]:update',
                }
 
@@ -67,7 +68,7 @@ def main(scr):
         info['mode'] = False
         alert = "?"
         update_all()
-        m.file_save(table, edit(arguments.file_name))
+        m.file_save(table, inputfield.get_input(input_win, absolute_path))
         info['message'] = None
         alert = None
         update_all()
@@ -201,16 +202,12 @@ def main(scr):
         r_win.noutrefresh()
 
     def update_input():
+        nonlocal input_win
+
         input_pad.clear()
         input_pad.addstr(0, 0, f"> {str(table.get_cell(selector.column, selector.row))}")
-        input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1 - len(address))
-
-    def edit(target):
         input_win = curses.newwin(1, width - len(address) - 2, height - 1, 2)
-        input_win.addstr(0, 0, f"{str(target)}")
-        input_win.noutrefresh()
-        input_box = textpad.Textbox(input_win)
-        return str(input_box.edit()).strip()
+        input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1 - len(address))
 
     def update_address():
         address = f"({selector.column:>3}:{selector.row:<3})"
@@ -300,7 +297,7 @@ def main(scr):
                 update_indicator()
                 update_input()
                 update_address()
-                change = edit(table.get_cell(selector.column, selector.row))
+                change = inputfield.get_input(input_win, table.get_cell(selector.column, selector.row))
                 table.set_cell(selector.column, selector.row, change)
                 changes = True
                 info["message"] = None
