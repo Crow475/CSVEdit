@@ -226,6 +226,7 @@ def main(scr):
         update_input()
         update_address()
         update_indicator()
+        curses.flash()
 
     update_all()
     curses.doupdate()
