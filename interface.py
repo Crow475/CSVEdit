@@ -70,7 +70,21 @@ def main(scr):
         update_all()
         file_path = inputfield.get_input(input_win, absolute_path, CancelReturnsNone= True)
         if file_path:
-            m.file_save(table, file_path)
+            try:
+                m.file_save(table, file_path)
+            except PermissionError:
+                show_error("Error: Access denied")
+        info['message'] = None
+        alert = None
+        update_all()
+
+    def show_error(message):
+        nonlocal info
+        nonlocal alert
+        info['message'] = message + key_hint["confirm"]
+        alert = "!"
+        update_all()
+        inputfield.get_input(input_win)
         info['message'] = None
         alert = None
         update_all()
