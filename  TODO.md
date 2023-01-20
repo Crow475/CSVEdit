@@ -6,6 +6,7 @@
 	- [x] mode indication
 	- [x] dialect indication
 	- [x] prompt indication
+	- [ ] warning/error indication
 	- [ ] header display indication
 - [ ] input field
 	- [ ] text wrapping
@@ -18,12 +19,12 @@
 	- [ ] remove row
 	- [ ] add column
 	- [ ] remove column
-- [ ] custom textbox
+- [x] custom textbox
 	- [x] scrolling
 	- [x] cursor highlight
 	- [x] backspace
 	- [x] enter
-	- [ ] escape
+	- [x] escape
 - [x] pointer position indicator
 - [x] csv file saving
 - [x] scrolling the table pad

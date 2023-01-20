@@ -68,7 +68,9 @@ def main(scr):
         info['mode'] = False
         alert = "?"
         update_all()
-        m.file_save(table, inputfield.get_input(input_win, absolute_path))
+        file_path = inputfield.get_input(input_win, absolute_path, CancelReturnsNone= True)
+        if file_path:
+            m.file_save(table, file_path)
         info['message'] = None
         alert = None
         update_all()
@@ -86,7 +88,7 @@ def main(scr):
 
     def update_info(info_message: str = None, show_mode: bool = False):
 
-        info_mode = " Mode: "
+        info_mode = " Mode:"
 
         if read_only:
             info_keys = key_hint["quit"] + " "
@@ -98,15 +100,15 @@ def main(scr):
             show_mode = True
 
         if show_mode:
-            info_spacer_len = (width-2)-(len(info_message) + len(info_mode))
+            info_spacer_len = (width-2)-(len(info_message) + len(info_mode) + row_width)
             if info_spacer_len > 0:
                 info_message = f"{info_message}{' ':^{info_spacer_len}}{info_mode}"
 
         if len(info_message) >= width - 1:
             info_message = ' '
 
-        info_win = curses.newwin(2, width - 2, height - 2, 1)
-        info_win.addstr(0, 0, f"{info_message:<{width - 2}}", curses.A_REVERSE)
+        info_win = curses.newwin(1, width - row_width, height - 2, row_width)
+        info_win.addstr(0, 0, f"{info_message:<{width - row_width - 1}}", curses.A_REVERSE)
         info_win.noutrefresh()
 
     def update_table():

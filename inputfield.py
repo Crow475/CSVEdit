@@ -69,7 +69,7 @@ class input_field:
             self.window.addch(0, screen_pos, ' ', curses.A_REVERSE)
         self.window.refresh()
 
-def get_input(window, contents: str = None):
+def get_input(window, contents: str = None, CancelReturnsNone: bool = False):
     special_keys = [ 10, 13, -1, 27,
                     curses.KEY_ENTER,
                     curses.KEY_BACKSPACE,
@@ -78,6 +78,7 @@ def get_input(window, contents: str = None):
                     curses.KEY_IC,
                     curses.KEY_HOME,
                     curses.KEY_SHOME,
+                    curses.KEY_END,
                     curses.KEY_SEND,
                     curses.KEY_RIGHT,
                     curses.KEY_LEFT,
@@ -108,6 +109,8 @@ def get_input(window, contents: str = None):
         if key == curses.KEY_BACKSPACE:
             input_window.backspace()
         if key == 27:
+            if CancelReturnsNone:
+                return None
             return input_window.contents_backup
         if key in [curses.KEY_ENTER, 10, 13]:
             return input_window.gather()
