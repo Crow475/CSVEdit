@@ -78,7 +78,7 @@ def main(scr):
         alert = None
         update_all()
 
-    def show_error(message):
+    def show_error(message: str):
         nonlocal info
         nonlocal alert
         info['message'] = message + key_hint["confirm"]
@@ -88,6 +88,29 @@ def main(scr):
         info['message'] = None
         alert = None
         update_all()
+
+    def show_prompt(message: str):
+        nonlocal info
+        nonlocal alert
+        info["message"] = message + "[y/n]" + key_hint["cancel"]
+        alert = "?"
+        update_all()
+        answer = inputfield.get_input(input_win)
+        if str(answer).strip().lower() in ['yes', 'y']:
+            info['message'] = None
+            alert = None
+            update_all()
+            return True
+        if str(answer).strip().lower() in ['no', 'n']:
+            info['message'] = None
+            alert = None
+            update_all()
+            return False
+        info['message'] = None
+        alert = None
+        update_all()
+        return None
+
 
     def get_quoting_ind(quoting):
         if quoting == 0:
@@ -257,8 +280,14 @@ def main(scr):
             update_all()
         if user_input == ord('q'):
             if changes:
-                save_as()
-            break
+                answer = show_prompt("Do you want to save changes to the file?")
+                if answer is True:
+                    save_as()
+                    break
+                if answer is False:
+                    break
+            else:
+                break
         if user_input == ord('s'):
             save_as()
             changes = False

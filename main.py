@@ -107,7 +107,7 @@ class Pointer():
 def file_opener(file_name):
     """Opens a csv file as a table object"""
     with open(file_name, encoding="utf-8") as file:
-        # Determine the dialect of the file and register it
+        # Determine the dialect of the file
         dialect = csv.Sniffer().sniff(file.readline(), delimiters=valid_delimeters)
         dialect.quoting = sniff_quoting(file_name, dialect)
 
@@ -115,7 +115,7 @@ def file_opener(file_name):
 
         filereader = csv.reader(file, dialect)
 
-        # Determine the number of columns and row in the file
+        # Determine the number of columns and rows in the file
         # to create a table based on it
         max_rows = 0
         max_columns = 0
