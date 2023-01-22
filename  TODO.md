@@ -6,7 +6,7 @@
 	- [x] mode indication
 	- [x] dialect indication
 	- [x] prompt indication
-	- [ ] warning/error indication
+	- [x] warning/error indication
 	- [ ] header display indication
 - [ ] input field
 	- [ ] text wrapping

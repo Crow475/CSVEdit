@@ -11,10 +11,14 @@ def get_column(column):
     from its numerical representation
     """
 
-    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     if type(column) == str and column.isalpha():
         return column
-    return alphabet[column - 1]
+    result = []
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    while column:
+        column, remainder = divmod(column - 1, 26)
+        result[:0] = alphabet[remainder]
+    return ''.join(result)
 
 class Table:
     """
