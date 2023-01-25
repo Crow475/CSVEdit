@@ -149,7 +149,7 @@ def main(scr):
         info_win.noutrefresh()
 
     def update_table():
-        table_pad.clear()
+        table_pad.erase()
         shown_collumns.clear()
         shown_rows.clear()
         for y in range(table.row_count - y_shift):
@@ -243,7 +243,7 @@ def main(scr):
     def update_input():
         nonlocal input_win
 
-        input_pad.clear()
+        input_pad.erase()
         input_pad.addstr(0, 0, f"> {str(table.get_cell(selector.column, selector.row))}")
         input_win = curses.newwin(1, width - len(address) - 2, height - 1, 2)
         input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1 - len(address))

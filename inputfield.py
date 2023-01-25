@@ -56,7 +56,7 @@ class input_field:
         return ''.join(self.contents).strip()
 
     def show(self):
-        self.window.clear()
+        self.window.erase()
         screen_pos = 0
         for i in range(0 + self.shift, min(self.max_shown + self.shift, len(self.contents))):
             if self.cursor_pos == i:
