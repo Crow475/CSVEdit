@@ -30,14 +30,8 @@ def main(scr):
     curses.curs_set(False)
     curses.halfdelay(1)
 
-    row_width = len(str(table.row_count))
-
-    height, width = scr.getmaxyx()
-    table_pad = curses.newpad(100, 200)
-    column_pad = curses.newpad(1, 200)
-    row_pad = curses.newpad(100, row_width)
-    input_pad = curses.newpad(1, 100)
-    input_win = curses.newwin(1, width - 9 - 2, height - 1, 2)
+    table_height = table.row_count + 1
+    table_width = table.column_count * 20 + table.column_count * 3
 
     selector = m.Pointer(1, 1)
     shown_collumns = []
@@ -60,6 +54,18 @@ def main(scr):
                 'cancel':' [esc]:cancel',
                 'update':' [f5]:update',
                }
+
+    row_width = len(str(table.row_count))
+
+    height, width = scr.getmaxyx()
+    table_pad = curses.newpad(table_height, table_width)
+    column_pad = curses.newpad(1, table_width + 2)
+    if table_height > height - 2:
+        row_pad = curses.newpad(table_height, row_width)
+    else:
+        row_pad = curses.newpad(height - 2, row_width)
+    input_pad = curses.newpad(1, 100)
+    input_win = curses.newwin(1, width - 9 - 2, height - 1, 2)
 
     def save_as():
         nonlocal info
