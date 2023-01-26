@@ -29,7 +29,7 @@
 - [x] csv file saving
 - [x] scrolling the table pad
 - [x] scrollable table indicators
-- [ ] cell text wrapping
+- [x] cell text wrapping
 - [ ] add/remove rows and columns
 - [ ] reading settings file
 - [ ] clipboard Integration

@@ -56,6 +56,7 @@ def main(scr):
                }
 
     row_width = len(str(table.row_count))
+    max_cell_length = 23
 
     height, width = scr.getmaxyx()
     table_pad = curses.newpad(table_height, table_width)
@@ -167,12 +168,15 @@ def main(scr):
                 if cell_display is None or cell_display == '':
                     cell_display = "-"
                 cell_display = str(cell_display).strip()
-                cell_display = f" {cell_display:^{table.max_len(x + 1)}} "
+                if len(cell_display) > max_cell_length:
+                    cell_display = cell_display[:max_cell_length - 3]
+                    cell_display = cell_display + "..."
+                cell_display = f" {cell_display:^{min(table.max_len(x + 1), max_cell_length)}} "
                 if selector.column_number == x + 1 and selector.row == y + 1:
                     table_pad.addstr(y - y_shift, x_display, cell_display, curses.A_BLINK)
                 else:
                     table_pad.addstr(y - y_shift, x_display, cell_display)
-                x_display = x_display + table.max_len(x + 1) + 2
+                x_display = x_display + min(table.max_len(x + 1), max_cell_length) + 2
                 table_pad.addstr(y - y_shift, x_display, '|')
                 x_display += 1
                 if x_display < width - 3 and m.get_column(x + 1) not in shown_collumns:
@@ -200,7 +204,7 @@ def main(scr):
         x_display = 0
         for x in range(table.column_count - x_shift):
             x = x + x_shift
-            column_name = f" {str(m.get_column(x + 1)):^{table.max_len(x + 1)}} |"
+            column_name = f" {str(m.get_column(x + 1)):^{min(table.max_len(x + 1), max_cell_length)}} |"
             column_pad.addstr(0, x_display, column_name, curses.A_REVERSE)
             x_display = x_display + table.max_len(x + 1) + 3
         if x_display < width - 2:
