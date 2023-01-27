@@ -56,7 +56,7 @@ def main(scr):
                }
 
     row_width = len(str(table.row_count))
-    max_cell_length = 23
+    max_cell_length = 28
 
     height, width = scr.getmaxyx()
     table_pad = curses.newpad(table_height, table_width)
@@ -65,7 +65,7 @@ def main(scr):
         row_pad = curses.newpad(table_height, row_width)
     else:
         row_pad = curses.newpad(height - 2, row_width)
-    input_pad = curses.newpad(1, 100)
+    input_pad = curses.newpad(1, 255)
     input_win = curses.newwin(1, width - 9 - 2, height - 1, 2)
 
     def save_as():
@@ -206,7 +206,7 @@ def main(scr):
             x = x + x_shift
             column_name = f" {str(m.get_column(x + 1)):^{min(table.max_len(x + 1), max_cell_length)}} |"
             column_pad.addstr(0, x_display, column_name, curses.A_REVERSE)
-            x_display = x_display + table.max_len(x + 1) + 3
+            x_display = x_display + min(table.max_len(x + 1), max_cell_length) + 3
         if x_display < width - 2:
             column_spacer = ' ' * ((width - 2) - x_display)
             column_pad.addstr(0, x_display, column_spacer, curses.A_REVERSE)
@@ -254,9 +254,14 @@ def main(scr):
         nonlocal input_win
 
         input_pad.erase()
-        input_pad.addstr(0, 0, f"> {str(table.get_cell(selector.column, selector.row))}")
+        value = str(table.get_cell(selector.column, selector.row))
+        value = f"> {value}"
+        input_length = width - 2 - len(address)
+        if len(value) > input_length:
+            value = value[:input_length - 3] + "..."
+        input_pad.addstr(0, 0, value)
         input_win = curses.newwin(1, width - len(address) - 2, height - 1, 2)
-        input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, width - 1 - len(address))
+        input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, input_length)
 
     def update_address():
         address = f"({selector.column:>3}:{selector.row:<3})"

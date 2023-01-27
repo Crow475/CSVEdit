@@ -8,17 +8,19 @@
 	- [x] prompt indication
 	- [x] warning/error indication
 	- [ ] header display indication
-- [ ] input field
-	- [ ] text wrapping
+- [x] input field
+	- [x] text wrapping
 - [ ] info bar
 	- [x] edit key
 	- [x] exit key
 	- [ ] save key
-	- [ ] save as key
-	- [ ] add row
-	- [ ] remove row
-	- [ ] add column
-	- [ ] remove column
+	- [ ] update key
+	- [ ] info key
+	- [ ] save as key (if extended)
+	- [ ] add row (if extended)
+	- [ ] remove row (if extended)
+	- [ ] add column (if extended)
+	- [ ] remove column (if extended)
 - [x] custom textbox
 	- [x] scrolling
 	- [x] cursor highlight
@@ -31,8 +33,9 @@
 - [x] scrollable table indicators
 - [x] cell text wrapping
 - [ ] add/remove rows and columns
-- [ ] reading settings file
 - [ ] clipboard Integration
+- [ ] reading settings file
+- [ ] info window
 - [ ] settings file
 	- [ ] pointer style
 	- [ ] visual column delimeters (on/off)
