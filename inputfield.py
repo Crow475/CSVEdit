@@ -1,8 +1,22 @@
+"""
+A custom curses text input module to use in place of the curses.textpad.
+In contrast to curses textpad inputfield:
+- displays a unix-style pointer
+- allows scrolling through the field if its contents don't fit in the window
+- prevents arrow keys from entering spaces
+- does not support windows that are taller than 1 row
+- does not use Emacs-style keybinds by default
+"""
 import curses
 
 class input_field:
-    def __init__(self, window, contents: str = None) -> None:
-        self.contents_backup = contents 
+    """
+    Returns an input_field object
+    Requires a curses window object (height = 1, width is unlimited)
+    Optionally you can specify the contents of the field for user to edit
+    """
+    def __init__(self, window, contents: str = None):
+        self.contents_backup = contents
         if contents:
             self.contents = list(str(contents))
         else:
@@ -14,6 +28,8 @@ class input_field:
         self.cursor_pos = min(self.max_shown - 1, len(self.contents))
 
     def cursor_left(self):
+        """ Moves the cursor one position left"""
+
         if self.cursor_pos > 0:
             self.cursor_pos -= 1
             if self.cursor_pos < self.shift:
@@ -21,20 +37,31 @@ class input_field:
 
 
     def cursor_right(self):
+        """ Moves the cursor one position right"""
+
         if self.cursor_pos < len(self.contents):
             self.cursor_pos += 1
             if self.cursor_pos > self.max_shown + self.shift:
                 self.shift += 1
 
     def cursor_home(self):
+        """ Moves the cursor to the leftmost position"""
+
         while self.cursor_pos > 0:
             self.cursor_left()
 
     def cursor_end(self):
+        """ Moves the cursor to the rightmost position"""
+
         while self.cursor_pos < len(self.contents):
             self.cursor_right()
 
     def set_character(self, character):
+        """
+        Replaces the character at the cursor's position
+        and moves the cursor one position right
+        """
+
         try:
             self.contents[self.cursor_pos] = character
             self.cursor_right()
@@ -46,16 +73,23 @@ class input_field:
                 raise IndexError from IE
 
     def backspace(self):
+        """
+        Removes the character at the cursor's position
+        and moves the cursor one position left
+        """
         if self.contents:
             self.contents.pop(self.cursor_pos - 1)
             self.cursor_left()
 
     def gather(self):
+        """Returns the contents of input_field object"""
+
         if self.contents == ' ':
             return None
         return ''.join(self.contents).strip()
 
     def show(self):
+        """Updates the window"""
         self.window.erase()
         screen_pos = 0
         for i in range(0 + self.shift, min(self.max_shown + self.shift, len(self.contents))):
@@ -70,6 +104,14 @@ class input_field:
         self.window.refresh()
 
 def get_input(window, contents: str = None, CancelReturnsNone: bool = False):
+    """
+    The default way to use inputfield.
+    Requires a curses window and creates input_field from it.
+    Accepts keystrokes, when enter is hit returns the window contents and
+    allows the rest of the main program to continue operation. When escape 
+    is hit returns the original contents, or None if CanceReturnsNone = True.
+    Suports home and end keys, left and right arrow keys and backspace.
+    """
     special_keys = [ 10, 13, -1, 27,
                     curses.KEY_ENTER,
                     curses.KEY_BACKSPACE,
