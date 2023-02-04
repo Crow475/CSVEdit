@@ -40,6 +40,24 @@ class Pointer:
         """Moves the pointer one row up"""
         self.row -= 1
 
+class info_holder:
+    def __init__(self, message: str = None, mode: str = 'R',
+                show_mode: bool = True, alert: str = None):
+        self.message = message
+        self.mode = mode
+        self.show_mode = show_mode
+        self.alert = alert
+
+    def set_alert(self, alert_sign: str, new_message: str):
+        self.alert = alert_sign
+        self.message = new_message
+        self.show_mode = False
+    
+    def reset_alert(self):
+        self.alert = None
+        self.message = None
+        self.show_mode = True
+
 argument_parser = argparse.ArgumentParser()
 
 argument_parser.add_argument("file_name", help="path to the file", type=str)
