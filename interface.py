@@ -204,9 +204,10 @@ def main(scr):
         x_display = 0
         for x in range(table.column_count - x_shift):
             x = x + x_shift
-            column_name = f" {str(m.get_column(x + 1)):^{min(table.max_len(x + 1), max_cell_length)}} |"
+            colum_len = min(table.max_len(x + 1), max_cell_length)
+            column_name = f" {str(m.get_column(x + 1)):^{colum_len}} |"
             column_pad.addstr(0, x_display, column_name, curses.A_REVERSE)
-            x_display = x_display + min(table.max_len(x + 1), max_cell_length) + 3
+            x_display = x_display + colum_len + 3
         if x_display < width - 2:
             column_spacer = ' ' * ((width - 2) - x_display)
             column_pad.addstr(0, x_display, column_spacer, curses.A_REVERSE)
@@ -358,8 +359,9 @@ def main(scr):
                 update_indicator()
                 update_input()
                 update_address()
-                change = inputfield.get_input(input_win, table.get_cell(selector.column, selector.row))
-                table.set_cell(selector.column, selector.row, change)
+                value = table.get_cell(selector.column, selector.row)
+                value = inputfield.get_input(input_win, value)
+                table.set_cell(selector.column, selector.row, value)
                 changes = True
                 info["message"] = None
                 info["mode"] = False
