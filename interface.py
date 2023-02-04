@@ -1,11 +1,44 @@
 #!/usr/bin/python3
-import curses
-import sys
 import os
+import sys
+import curses
 import argparse
+
+import tables
 import inputfield
 
-import main as m
+class Pointer:
+    """
+    A class that defines a pointer for the interface.
+    It has its own coordinates and methods of moving.
+    """
+    def __init__(self, column_number, row):
+        # Creates a pointer with set coordinates
+        self.column_number = column_number
+        self.row = row
+        self.update_column()
+
+    def update_column(self):
+        """Updates the column letter"""
+        self.column = tables.get_column(self.column_number)
+
+    def right(self):
+        """Moves the pointer one column right"""
+        self.column_number += 1
+        self.update_column()
+
+    def left(self):
+        """Moves the pointer one column left"""
+        self.column_number -= 1
+        self.update_column()
+
+    def down(self):
+        """Moves the pointer one row down"""
+        self.row += 1
+
+    def up(self):
+        """Moves the pointer one row up"""
+        self.row -= 1
 
 argument_parser = argparse.ArgumentParser()
 
@@ -13,7 +46,7 @@ argument_parser.add_argument("file_name", help="path to the file", type=str)
 arguments = argument_parser.parse_args()
 
 try:
-    table = m.file_opener(arguments.file_name)
+    table = tables.file_opener(arguments.file_name)
 except FileNotFoundError:
     print(f"[Error] No such file: '{arguments.file_name}'")
     sys.exit(1)
@@ -33,7 +66,7 @@ def main(scr):
     table_height = table.row_count + 1
     table_width = table.column_count * 20 + table.column_count * 3
 
-    selector = m.Pointer(1, 1)
+    selector = Pointer(1, 1)
     shown_collumns = []
     shown_rows = []
     x_shift = 0
@@ -78,7 +111,7 @@ def main(scr):
         file_path = inputfield.get_input(input_win, absolute_path, CancelReturnsNone= True)
         if file_path:
             try:
-                m.file_save(table, file_path)
+                tables.file_save(table, file_path)
             except PermissionError:
                 show_error("Error: Access denied")
         info['message'] = None
@@ -179,8 +212,8 @@ def main(scr):
                 x_display = x_display + min(table.max_len(x + 1), max_cell_length) + 2
                 table_pad.addstr(y - y_shift, x_display, '|')
                 x_display += 1
-                if x_display < width - 3 and m.get_column(x + 1) not in shown_collumns:
-                    shown_collumns.append(m.get_column(x + 1))
+                if x_display < width - 3 and tables.get_column(x + 1) not in shown_collumns:
+                    shown_collumns.append(tables.get_column(x + 1))
             if y < height - 3 + y_shift:
                 shown_rows.append(y + 1)
         table_pad.noutrefresh(0, 0, 1, row_width, height - 3, width - 2)
@@ -205,7 +238,7 @@ def main(scr):
         for x in range(table.column_count - x_shift):
             x = x + x_shift
             colum_len = min(table.max_len(x + 1), max_cell_length)
-            column_name = f" {str(m.get_column(x + 1)):^{colum_len}} |"
+            column_name = f" {str(tables.get_column(x + 1)):^{colum_len}} |"
             column_pad.addstr(0, x_display, column_name, curses.A_REVERSE)
             x_display = x_display + colum_len + 3
         if x_display < width - 2:
@@ -245,7 +278,7 @@ def main(scr):
 
     def update_r():
         r_win = curses.newwin(1, 2, 0, width - 1)
-        if shown_collumns[-1] != m.get_column(table.column_count):
+        if shown_collumns[-1] != tables.get_column(table.column_count):
             r_win.insstr(0, 0, ">", curses.A_REVERSE)
         else:
             r_win.insstr(0, 0, " ", curses.A_REVERSE)

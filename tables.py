@@ -75,39 +75,6 @@ class Table:
             return_string = return_string + "\n"
         return return_string
 
-class Pointer():
-    """
-    A class that defines a pointer for the interface.
-    It has its own coordinates and methods of moving.
-    """
-    def __init__(self, column_number, row):
-        # Creates a pointer with set coordinates
-        self.column_number = column_number
-        self.row = row
-        self.update_column()
-
-    def update_column(self):
-        """Updates the column letter"""
-        self.column = get_column(self.column_number)
-
-    def right(self):
-        """Moves the pointer one column right"""
-        self.column_number += 1
-        self.update_column()
-
-    def left(self):
-        """Moves the pointer one column left"""
-        self.column_number -= 1
-        self.update_column()
-
-    def down(self):
-        """Moves the pointer one row down"""
-        self.row += 1
-
-    def up(self):
-        """Moves the pointer one row up"""
-        self.row -= 1
-
 def file_opener(file_name):
     """Opens a csv file as a table object"""
     with open(file_name, encoding="utf-8") as file:
