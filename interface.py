@@ -164,15 +164,11 @@ def main(scr):
 
 
     def get_quoting_ind(quoting):
-        if quoting == 0:
-            return 'M'
-        if quoting == 1:
-            return 'A'
-        if quoting == 2:
-            return 'L'
-        if quoting == 3:
-            return 'N'
-        return ' '
+        try:
+            quoting_ind = ['M', 'A', 'L', 'N']
+            return quoting_ind[quoting]
+        except IndexError:
+            return ' '
 
     def update_info(message: str = None, show_mode: bool = False):
         nonlocal info
