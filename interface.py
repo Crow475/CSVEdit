@@ -40,6 +40,39 @@ class Pointer:
         """Moves the pointer one row up"""
         self.row -= 1
 
+class info_holder:
+    def __init__(self, default_message: str = None):
+        self.default_message = default_message
+        self.message = self.default_message
+        self.mode = 'R'
+        self.show_mode = True
+        self.alert = None
+
+    def set_alert(self, alert_sign: str, new_message: str):
+        self.alert = alert_sign
+        self.message = new_message
+        self.show_mode = False
+
+    def reset_alert(self):
+        self.alert = None
+        self.message = self.default_message
+        self.show_mode = True
+
+    def set_message(self, new_message: str, show_mode: bool):
+        self.message = new_message
+        self.show_mode = show_mode
+
+    def reset_messsage(self):
+        self.message = self.default_message
+        self.show_mode = True
+
+key_hint = {'edit':' [RETURN]:edit',
+            'confirm':' [RETURN]:confirm',
+            'quit':' [q]:quit',
+            'cancel':' [esc]:cancel',
+            'update':' [f5]:update',
+            }
+
 max_cell_length = 28
 
 argument_parser = argparse.ArgumentParser()
@@ -75,20 +108,11 @@ def main(scr):
     y_shift = 0
     address = f"({selector.column:>3}:{selector.row:<3})"
 
-    mode = 'R'
-    alert = None
+    info = info_holder(default_message = key_hint["edit"] + key_hint["quit"] + " ")
+    if read_only:
+        info = info_holder(default_message = key_hint["quit"] + " ")
+
     changes = False
-
-    info = {'message':None,
-            'mode':False
-           }
-
-    key_hint = {'edit':' [RETURN]:edit',
-                'confirm':' [RETURN]:confirm',
-                'quit':' [q]:quit',
-                'cancel':' [esc]:cancel',
-                'update':' [f5]:update',
-               }
 
     row_width = len(str(table.row_count))
 
@@ -104,10 +128,7 @@ def main(scr):
 
     def save_as():
         nonlocal info
-        nonlocal alert
-        info['message'] = "Save as: " + key_hint["confirm"] + key_hint["cancel"]
-        info['mode'] = False
-        alert = "?"
+        info.set_alert('?', "Save as: " + key_hint["confirm"] + key_hint["cancel"])
         update_all()
         file_path = inputfield.get_input(input_win, absolute_path, CancelReturnsNone= True)
         if file_path:
@@ -115,42 +136,31 @@ def main(scr):
                 tables.file_save(table, file_path)
             except PermissionError:
                 show_error("Error: Access denied")
-        info['message'] = None
-        alert = None
+        info.reset_alert()
         update_all()
 
     def show_error(message: str):
         nonlocal info
-        nonlocal alert
-        info['message'] = message + key_hint["confirm"]
-        alert = "!"
+        info.set_alert('!', message + key_hint["confirm"])
         update_all()
         inputfield.get_input(input_win)
-        info['message'] = None
-        alert = None
+        info.reset_alert()
         update_all()
 
     def show_prompt(message: str):
         nonlocal info
-        nonlocal alert
-        info["message"] = message + "[y/n]" + key_hint["cancel"]
-        alert = "?"
+        info.set_alert('?', message + "[y/n]" + key_hint["cancel"])
         update_all()
         answer = inputfield.get_input(input_win)
         if str(answer).strip().lower() in ['yes', 'y']:
-            info['message'] = None
-            alert = None
-            update_all()
-            return True
-        if str(answer).strip().lower() in ['no', 'n']:
-            info['message'] = None
-            alert = None
-            update_all()
-            return False
-        info['message'] = None
-        alert = None
+            answer = True
+        elif str(answer).strip().lower() in ['no', 'n']:
+            answer = False
+        else:
+            answer = None
+        info.reset_alert()
         update_all()
-        return None
+        return answer
 
 
     def get_quoting_ind(quoting):
@@ -164,29 +174,25 @@ def main(scr):
             return 'N'
         return ' '
 
-    def update_info(info_message: str = None, show_mode: bool = False):
+    def update_info(message: str = None, show_mode: bool = False):
+        nonlocal info
 
-        info_mode = " Mode:"
+        if message:
+            info.message = message
+            info.show_mode = show_mode
 
-        if read_only:
-            info_keys = key_hint["quit"] + " "
-        else:
-            info_keys = key_hint["edit"] + key_hint["quit"] + " "
+        message = info.message
 
-        if not info_message:
-            info_message = info_keys
-            show_mode = True
+        if info.show_mode:
+            spacer_len = (width-2)-(len(info.message) + len(" Mode:") + row_width)
+            if spacer_len > 0:
+                message = f"{message}{' ':^{spacer_len}} Mode:"
 
-        if show_mode:
-            info_spacer_len = (width-2)-(len(info_message) + len(info_mode) + row_width)
-            if info_spacer_len > 0:
-                info_message = f"{info_message}{' ':^{info_spacer_len}}{info_mode}"
-
-        if len(info_message) >= width - 1:
-            info_message = ' '
+        if len(message) >= width - 1:
+            message = ' '
 
         info_win = curses.newwin(1, width - row_width, height - 2, row_width)
-        info_win.addstr(0, 0, f"{info_message:<{width - row_width - 1}}", curses.A_REVERSE)
+        info_win.addstr(0, 0, f"{message:<{width - row_width - 1}}", curses.A_REVERSE)
         info_win.noutrefresh()
 
     def update_table():
@@ -222,8 +228,8 @@ def main(scr):
     def update_indicator():
         indicator_win = curses.newwin(height - 2, 2, 1, width - 1)
         indicators = ''
-        if alert:
-            indicators += alert
+        if info.alert:
+            indicators += info.alert
         indicators += get_quoting_ind(table.dialect.quoting)
         indicators = f"{indicators:<{height - 3}}"
         for index, symbol in enumerate(indicators):
@@ -231,7 +237,7 @@ def main(scr):
         if read_only:
             indicator_win.addstr(height - 3, 0, "R", curses.A_REVERSE + curses.A_UNDERLINE)
         else:
-            indicator_win.addstr(height - 3, 0, mode, curses.A_REVERSE)
+            indicator_win.addstr(height - 3, 0, info.mode, curses.A_REVERSE)
         indicator_win.noutrefresh()
 
     def update_columns():
@@ -309,7 +315,7 @@ def main(scr):
         update_x()
         update_v()
         update_r()
-        update_info(info["message"], info["mode"])
+        update_info()
         update_columns()
         update_rows()
         update_input()
@@ -385,11 +391,10 @@ def main(scr):
             update_address()
             update_input()
         if user_input in (curses.KEY_ENTER, 10, 13):
-            if not read_only and mode == 'R':
-                mode = 'E'
-                info["message"] = key_hint["confirm"] + key_hint["cancel"]
-                info["mode"] = True
-                update_info(info["message"], info["mode"])
+            if not read_only and info.mode == 'R':
+                info.mode = 'E'
+                info.set_message(key_hint["confirm"] + key_hint["cancel"], True)
+                update_info()
                 update_indicator()
                 update_input()
                 update_address()
@@ -397,9 +402,8 @@ def main(scr):
                 value = inputfield.get_input(input_win, value)
                 table.set_cell(selector.column, selector.row, value)
                 changes = True
-                info["message"] = None
-                info["mode"] = False
-                mode = 'R'
+                info.reset_messsage()
+                info.mode = 'R'
                 update_all()
         curses.doupdate()
 
