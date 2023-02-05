@@ -73,6 +73,8 @@ key_hint = {'edit':' [RETURN]:edit',
             'update':' [f5]:update',
             }
 
+max_cell_length = 28
+
 argument_parser = argparse.ArgumentParser()
 
 argument_parser.add_argument("file_name", help="path to the file", type=str)
@@ -97,7 +99,7 @@ def main(scr):
     curses.halfdelay(1)
 
     table_height = table.row_count + 1
-    table_width = table.column_count * 20 + table.column_count * 3
+    table_width = table.column_count * max_cell_length + table.column_count * 3
 
     selector = Pointer(1, 1)
     shown_collumns = []
@@ -113,11 +115,10 @@ def main(scr):
     changes = False
 
     row_width = len(str(table.row_count))
-    max_cell_length = 28
 
     height, width = scr.getmaxyx()
     table_pad = curses.newpad(table_height, table_width)
-    column_pad = curses.newpad(1, table_width + 2)
+    column_pad = curses.newpad(1, max(table_width + 2, width - 1))
     if table_height > height - 2:
         row_pad = curses.newpad(table_height, row_width)
     else:
