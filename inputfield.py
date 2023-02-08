@@ -9,9 +9,9 @@ In contrast to curses textpad inputfield:
 """
 import curses
 
-class input_field:
+class InputField:
     """
-    Returns an input_field object
+    Returns an InputField object
     Requires a curses window object (height = 1, width is unlimited)
     Optionally you can specify the contents of the field for user to edit
     """
@@ -82,7 +82,7 @@ class input_field:
             self.cursor_left()
 
     def gather(self):
-        """Returns the contents of input_field object"""
+        """Returns the contents of InputField object"""
 
         if self.contents == ' ':
             return None
@@ -107,7 +107,7 @@ class input_field:
 def get_input(window, contents: str = None, CancelReturnsNone: bool = False):
     """
     The default way to use inputfield.
-    Requires a curses window and creates input_field from it.
+    Requires a curses window and creates InputField from it.
     Accepts keystrokes, when enter is hit returns the window contents and
     allows the rest of the main program to continue operation. When escape
     is hit returns the original contents, or None if CanceReturnsNone = True.
@@ -134,7 +134,7 @@ def get_input(window, contents: str = None, CancelReturnsNone: bool = False):
                     curses.KEY_RESIZE
                    ]
 
-    input_window = input_field(window, contents)
+    input_window = InputField(window, contents)
     window.keypad(1)
 
     while True:

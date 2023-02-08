@@ -40,7 +40,14 @@ class Pointer:
         """Moves the pointer one row up"""
         self.row -= 1
 
-class info_holder:
+class InfoHolder:
+    """
+    A class that holds information about the interface:
+    - message that is currently being displayed
+    - text of the default mesasge
+    - current mode of the editor
+    - alert symbol
+    """
     def __init__(self, default_message: str = None):
         self.default_message = default_message
         self.message = self.default_message
@@ -49,20 +56,24 @@ class info_holder:
         self.alert = None
 
     def set_alert(self, alert_sign: str, new_message: str):
+        """Sets the alert symbol message."""
         self.alert = alert_sign
         self.message = new_message
         self.show_mode = False
 
     def reset_alert(self):
+        """Resets the alert symbol and message to default values."""
         self.alert = None
         self.message = self.default_message
         self.show_mode = True
 
     def set_message(self, new_message: str, show_mode: bool):
+        """Sets the message to be displayed."""
         self.message = new_message
         self.show_mode = show_mode
 
     def reset_messsage(self):
+        """Resets the message the default value."""
         self.message = self.default_message
         self.show_mode = True
 
@@ -101,21 +112,20 @@ def main(scr):
     table_height = table.row_count + 1
     table_width = table.column_count * max_cell_length + table.column_count * 3
 
-    selector = Pointer(1, 1)
+    pointer = Pointer(1, 1)
+
+    info = InfoHolder(default_message = key_hint["edit"] + key_hint["quit"] + " ")
+    if read_only:
+        info = InfoHolder(default_message = key_hint["quit"] + " ")
+
     shown_collumns = []
     shown_rows = []
     x_shift = 0
     y_shift = 0
-    address = f"({selector.column:>3}:{selector.row:<3})"
-
-    info = info_holder(default_message = key_hint["edit"] + key_hint["quit"] + " ")
-    if read_only:
-        info = info_holder(default_message = key_hint["quit"] + " ")
-
     changes = False
 
+    address = f"({pointer.column:>3}:{pointer.row:<3})"
     row_width = len(str(table.row_count))
-
     height, width = scr.getmaxyx()
 
     input_win = curses.newwin(1, width - 2, height - 1, 2)
@@ -203,7 +213,7 @@ def main(scr):
                     cell_display = cell_display[:max_cell_length - 3]
                     cell_display = cell_display + "..."
                 cell_display = f" {cell_display:^{min(table.max_len(x + 1), max_cell_length)}} "
-                if selector.column_number == x + 1 and selector.row == y + 1:
+                if pointer.column_number == x + 1 and pointer.row == y + 1:
                     table_pad.addstr(y - y_shift, x_display, cell_display, curses.A_BLINK)
                 else:
                     table_pad.addstr(y - y_shift, x_display, cell_display)
@@ -288,18 +298,18 @@ def main(scr):
         nonlocal input_win
 
         input_length = width - 2 - len(address)
-        input_pad = curses.newpad(1, input_length + 1)
+        cell_pad = curses.newpad(1, input_length + 1)
         input_win = curses.newwin(1, input_length, height - 1, 2)
-        input_pad.erase()
-        value = str(table.get_cell(selector.column, selector.row))
+        cell_pad.erase()
+        value = str(table.get_cell(pointer.column, pointer.row))
         value = f"> {value}"
         if len(value) > input_length:
             value = value[:input_length - 3] + "..."
-        input_pad.addstr(0, 0, value)
-        input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, input_length)
+        cell_pad.addstr(0, 0, value)
+        cell_pad.noutrefresh(0, 0, height - 1, 0, height - 1, input_length)
 
     def update_address():
-        address = f"({selector.column:>3}:{selector.row:<3})"
+        address = f"({pointer.column:>3}:{pointer.row:<3})"
         address_win = curses.newwin(1, len(address), height - 1, width - len(address))
         address_win.insstr(0, 0, address, curses.A_REVERSE)
         address_win.noutrefresh()
@@ -344,9 +354,9 @@ def main(scr):
         if user_input == curses.KEY_RESIZE:
             height, width = scr.getmaxyx()
             update_all()
-        if user_input == curses.KEY_RIGHT and selector.column_number < table.column_count:
-            selector.right()
-            if selector.column not in shown_collumns:
+        if user_input == curses.KEY_RIGHT and pointer.column_number < table.column_count:
+            pointer.right()
+            if pointer.column not in shown_collumns:
                 x_shift += 1
             update_table()
             update_r()
@@ -354,9 +364,9 @@ def main(scr):
             update_columns()
             update_input()
             update_address()
-        if user_input == curses.KEY_LEFT and selector.column_number > 1:
-            selector.left()
-            if selector.column not in shown_collumns:
+        if user_input == curses.KEY_LEFT and pointer.column_number > 1:
+            pointer.left()
+            if pointer.column not in shown_collumns:
                 x_shift -= 1
             update_table()
             update_r()
@@ -364,9 +374,9 @@ def main(scr):
             update_columns()
             update_input()
             update_address()
-        if user_input == curses.KEY_DOWN and selector.row < table.row_count:
-            selector.down()
-            if selector.row not in shown_rows:
+        if user_input == curses.KEY_DOWN and pointer.row < table.row_count:
+            pointer.down()
+            if pointer.row not in shown_rows:
                 y_shift += 1
             update_table()
             update_v()
@@ -374,9 +384,9 @@ def main(scr):
             update_rows()
             update_input()
             update_address()
-        if user_input == curses.KEY_UP and selector.row > 1:
-            selector.up()
-            if selector.row not in shown_rows:
+        if user_input == curses.KEY_UP and pointer.row > 1:
+            pointer.up()
+            if pointer.row not in shown_rows:
                 y_shift -= 1
             update_table()
             update_v()
@@ -392,9 +402,9 @@ def main(scr):
                 update_indicator()
                 update_input()
                 update_address()
-                value = table.get_cell(selector.column, selector.row)
+                value = table.get_cell(pointer.column, pointer.row)
                 value = inputfield.get_input(input_win, value)
-                table.set_cell(selector.column, selector.row, value)
+                table.set_cell(pointer.column, pointer.row, value)
                 changes = True
                 info.reset_messsage()
                 info.mode = 'R'
