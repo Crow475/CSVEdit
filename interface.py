@@ -410,6 +410,9 @@ def main(scr):
                 info.mode = 'R'
                 update_all()
         curses.doupdate()
-
-curses.wrapper(main)
+try:
+    curses.wrapper(main)
+except Exception as exception:
+    tables.file_save(table, absolute_path + '.temp')
+    raise exception
 sys.exit(0)
