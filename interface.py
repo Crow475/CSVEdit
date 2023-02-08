@@ -117,14 +117,9 @@ def main(scr):
     row_width = len(str(table.row_count))
 
     height, width = scr.getmaxyx()
-    table_pad = curses.newpad(table_height, table_width)
-    column_pad = curses.newpad(1, max(table_width + 2, width - 1))
-    if table_height > height - 2:
-        row_pad = curses.newpad(table_height, row_width)
-    else:
-        row_pad = curses.newpad(height - 2, row_width)
-    input_pad = curses.newpad(1, 255)
-    input_win = curses.newwin(1, width - 9 - 2, height - 1, 2)
+
+    input_win = curses.newwin(1, width - 2, height - 1, 2)
+    key_pad = curses.newpad(1, 1)
 
     def save_as():
         nonlocal info
@@ -192,7 +187,7 @@ def main(scr):
         info_win.noutrefresh()
 
     def update_table():
-        table_pad.erase()
+        table_pad = curses.newpad(max(table_height, height), max(table_width, width))
         shown_collumns.clear()
         shown_rows.clear()
         for y in range(table.row_count - y_shift):
@@ -237,6 +232,7 @@ def main(scr):
         indicator_win.noutrefresh()
 
     def update_columns():
+        column_pad = curses.newpad(1, max(table_width + 2, width - 1))
         x_display = 0
         for x in range(table.column_count - x_shift):
             x = x + x_shift
@@ -250,6 +246,7 @@ def main(scr):
         column_pad.noutrefresh(0, 0, 0, row_width, 0, width - 2)
 
     def update_rows():
+        row_pad = curses.newpad(max(table_height, height - 2), row_width)
         for y in range(table.row_count - y_shift):
             y = y + y_shift
             row_pad.addstr(y - y_shift, 0, f"{str(y + 1):^{row_width}}", curses.A_REVERSE)
@@ -290,14 +287,15 @@ def main(scr):
     def update_input():
         nonlocal input_win
 
+        input_length = width - 2 - len(address)
+        input_pad = curses.newpad(1, input_length + 1)
+        input_win = curses.newwin(1, input_length, height - 1, 2)
         input_pad.erase()
         value = str(table.get_cell(selector.column, selector.row))
         value = f"> {value}"
-        input_length = width - 2 - len(address)
         if len(value) > input_length:
             value = value[:input_length - 3] + "..."
         input_pad.addstr(0, 0, value)
-        input_win = curses.newwin(1, width - len(address) - 2, height - 1, 2)
         input_pad.noutrefresh(0, 0, height - 1, 0, height - 1, input_length)
 
     def update_address():
@@ -307,6 +305,7 @@ def main(scr):
         address_win.noutrefresh()
 
     def update_all():
+        scr.clear()
         update_table()
         update_x()
         update_v()
@@ -322,11 +321,10 @@ def main(scr):
     update_all()
     curses.doupdate()
 
-    input_pad.move(0, 0)
-    input_pad.keypad(True)
+    key_pad.keypad(True)
 
     while True:
-        user_input = input_pad.getch()
+        user_input = key_pad.getch()
         height, width = scr.getmaxyx()
         if user_input == curses.KEY_F5:
             update_all()
@@ -354,8 +352,8 @@ def main(scr):
             update_r()
             update_x()
             update_columns()
-            update_address()
             update_input()
+            update_address()
         if user_input == curses.KEY_LEFT and selector.column_number > 1:
             selector.left()
             if selector.column not in shown_collumns:
@@ -364,8 +362,8 @@ def main(scr):
             update_r()
             update_x()
             update_columns()
-            update_address()
             update_input()
+            update_address()
         if user_input == curses.KEY_DOWN and selector.row < table.row_count:
             selector.down()
             if selector.row not in shown_rows:
@@ -374,8 +372,8 @@ def main(scr):
             update_v()
             update_x()
             update_rows()
-            update_address()
             update_input()
+            update_address()
         if user_input == curses.KEY_UP and selector.row > 1:
             selector.up()
             if selector.row not in shown_rows:
@@ -384,8 +382,8 @@ def main(scr):
             update_v()
             update_x()
             update_rows()
-            update_address()
             update_input()
+            update_address()
         if user_input in (curses.KEY_ENTER, 10, 13):
             if not read_only and info.mode == 'R':
                 info.mode = 'E'
