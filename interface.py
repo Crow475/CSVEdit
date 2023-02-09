@@ -92,7 +92,7 @@ argument_parser.add_argument("file_name", help="path to the file", type=str)
 arguments = argument_parser.parse_args()
 
 try:
-    table = tables.file_opener(arguments.file_name)
+    table = tables.file_open(arguments.file_name)
 except FileNotFoundError:
     print(f"[Error] No such file: '{arguments.file_name}'")
     sys.exit(1)

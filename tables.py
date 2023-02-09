@@ -11,7 +11,7 @@ def get_column(column):
     from its numerical representation
     """
 
-    if type(column) == str and column.isalpha():
+    if isinstance(column, str) and column.isalpha():
         return column
     result = []
     alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -75,7 +75,7 @@ class Table:
             return_string = return_string + "\n"
         return return_string
 
-def file_opener(file_name):
+def file_open(file_name):
     """Opens a csv file as a table object"""
     with open(file_name, encoding="utf-8") as file:
         # Determine the dialect of the file

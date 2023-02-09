@@ -146,9 +146,9 @@ def get_input(window, contents: str = None, CancelReturnsNone: bool = False):
             input_window.cursor_right()
         if key == curses.KEY_LEFT:
             input_window.cursor_left()
-        if key == curses.KEY_HOME or key == curses.KEY_SHOME:
+        if key in [curses.KEY_HOME, curses.KEY_SHOME]:
             input_window.cursor_home()
-        if key == curses.KEY_END or key == curses.KEY_SEND:
+        if key in [curses.KEY_END, curses.KEY_SEND]:
             input_window.cursor_end()
         if key == curses.KEY_BACKSPACE:
             input_window.backspace()
