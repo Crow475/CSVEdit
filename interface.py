@@ -131,6 +131,13 @@ def main(scr):
     input_win = curses.newwin(1, width - 2, height - 1, 2)
     key_pad = curses.newpad(1, 1)
 
+    def update_table_size():
+        nonlocal table_height, table_width, row_width
+
+        table_height = table.row_count + 1
+        table_width = table.column_count * max_cell_length + table.column_count * 3
+        row_width = len(str(table.row_count))
+
     def save_as():
         nonlocal info
         info.set_alert('?', "Save as: " + key_hint["confirm"] + key_hint["cancel"])
@@ -394,21 +401,39 @@ def main(scr):
             update_rows()
             update_input()
             update_address()
-        if user_input in (curses.KEY_ENTER, 10, 13):
-            if not read_only and info.mode == 'R':
-                info.mode = 'E'
-                info.set_message(key_hint["confirm"] + key_hint["cancel"], True)
-                update_info()
-                update_indicator()
-                update_input()
-                update_address()
-                value = table.get_cell(pointer.column, pointer.row)
-                value = inputfield.get_input(input_win, value)
-                table.set_cell(pointer.column, pointer.row, value)
+        if not read_only:
+            if user_input in (curses.KEY_ENTER, 10, 13):
+                if info.mode == 'R':
+                    info.mode = 'E'
+                    info.set_message(key_hint["confirm"] + key_hint["cancel"], True)
+                    update_info()
+                    update_indicator()
+                    update_input()
+                    update_address()
+                    value = table.get_cell(pointer.column, pointer.row)
+                    value = inputfield.get_input(input_win, value)
+                    table.set_cell(pointer.column, pointer.row, value)
+                    changes = True
+                    info.reset_messsage()
+                    info.mode = 'R'
+                    update_all()
+            if user_input == ord('c'):
+                table.add_column()
                 changes = True
-                info.reset_messsage()
-                info.mode = 'R'
-                update_all()
+                update_table_size()
+                update_table()
+                update_r()
+                update_x()
+                update_columns()
+            if user_input == ord('v'):
+                table.add_row()
+                changes = True
+                update_table_size()
+                update_table()
+                update_v()
+                update_x()
+                update_rows()
+                update_columns()
         curses.doupdate()
 try:
     curses.wrapper(main)
