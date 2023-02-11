@@ -146,10 +146,13 @@ def main(scr):
         if file_path:
             try:
                 tables.file_save(table, file_path)
+                return 1
             except PermissionError:
                 show_error("Error: Access denied")
+                return 2
         info.reset_alert()
         update_all()
+        return 0
 
     def show_error(message: str):
         nonlocal info
@@ -349,8 +352,11 @@ def main(scr):
             if changes:
                 answer = show_prompt("Do you want to save changes to the file?")
                 if answer is True:
-                    save_as()
-                    break
+                    result = 2
+                    while result == 2:
+                        result = save_as()
+                    if result == 1:
+                        break
                 if answer is False:
                     break
             else:
