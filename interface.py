@@ -89,18 +89,25 @@ max_cell_length = 28
 argument_parser = argparse.ArgumentParser()
 
 argument_parser.add_argument("file_name", help="path to the file", type=str)
+argument_parser.add_argument("-n", "--new", help="create a new file instead of editing", action="store_true")
 arguments = argument_parser.parse_args()
+
+temp_file = arguments.file_name + ".tmp"
 
 try:
     table = tables.file_open(arguments.file_name)
 except FileNotFoundError:
-    print(f"[Error] No such file: '{arguments.file_name}'")
-    sys.exit(1)
+    if not arguments.new:
+        print(f"[Error] No such file: '{arguments.file_name}'")
+        sys.exit(1)
+    table = tables.file_create(temp_file)
 except PermissionError:
     print(f"[Error] Access denied: '{arguments.file_name}'")
     sys.exit(2)
 
 read_only = not os.access(arguments.file_name, os.W_OK)
+if arguments.new:
+    read_only = not os.access(temp_file, os.W_OK)
 absolute_path = os.path.abspath(arguments.file_name)
 
 def main(scr):
@@ -146,6 +153,8 @@ def main(scr):
         if file_path:
             try:
                 tables.file_save(table, file_path)
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
                 return 1
             except PermissionError:
                 show_error("Error: Access denied")
@@ -444,6 +453,8 @@ def main(scr):
 try:
     curses.wrapper(main)
 except Exception as exception:
-    tables.file_save(table, absolute_path + '.temp')
+    tables.file_save(table, temp_file)
     raise exception
+if os.path.exists(temp_file):
+    os.remove(temp_file)
 sys.exit(0)

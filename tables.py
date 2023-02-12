@@ -122,3 +122,12 @@ def file_save(table: Table, file_name):
                 else:
                     row_out.append(table.get_cell(column, row))
             writer.writerow(row_out)
+
+def file_create(file_name):
+    """
+    Cretes an empty table, corresponding csv file
+    and opens it
+    """
+    table = Table(2, 2)
+    file_save(table, file_name)
+    return file_open(file_name)
