@@ -55,6 +55,24 @@ class Table:
         for column in range(1, self.column_count + 1):
             self.columns[get_column(column)].append(None)
 
+    def insert_column(self, column_index: int):
+        self.add_column()
+        for index in reversed(range(column_index + 1, self.column_count)):
+            temp_column = self.columns[get_column(index)]
+            self.columns[get_column(index)] = self.columns[get_column(index + 1)]
+            self.columns[get_column(index + 1)] = temp_column
+
+    def insert_row(self, row_index: int):
+        self.add_row()
+        for index in reversed(range(row_index, self.row_count - 1)):
+            temp_row = []
+            for column in range(1, self.column_count + 1):
+                temp_row.append(self.columns[get_column(column)][index])
+            for column in range(1, self.column_count + 1):
+                self.columns[get_column(column)][index] = self.columns[get_column(column)][index + 1]
+            for column in range(1, self.column_count + 1):
+                self.columns[get_column(column)][index + 1] = temp_row[column - 1]
+
     def max_len(self, column):
         """Returns the maximum length of the values a column"""
         longest = 1

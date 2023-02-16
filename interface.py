@@ -364,7 +364,15 @@ def main(scr):
                     info.mode = 'R'
                     update_all()
             if user_input == ord('c'):
-                table.add_column()
+                table.insert_column(pointer.column_number)
+                changes = True
+                update_table_size()
+                update_table()
+                update_r()
+                update_x()
+                update_columns()
+            if user_input == ord('C'):
+                table.insert_column(pointer.column_number - 1)
                 changes = True
                 update_table_size()
                 update_table()
@@ -372,7 +380,16 @@ def main(scr):
                 update_x()
                 update_columns()
             if user_input == ord('v'):
-                table.add_row()
+                table.insert_row(pointer.row)
+                changes = True
+                update_table_size()
+                update_table()
+                update_v()
+                update_x()
+                update_rows()
+                update_columns()
+            if user_input == ord('V'):
+                table.insert_row(pointer.row - 1)
                 changes = True
                 update_table_size()
                 update_table()
