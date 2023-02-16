@@ -278,6 +278,33 @@ def main(scr):
         update_indicator()
         curses.flash()
 
+    def move(direction: str = None):
+        nonlocal x_shift, y_shift
+        if direction == 'up':
+            pointer.up()
+            if pointer.row not in shown_rows:
+                y_shift -= 1
+        elif direction == 'down':
+            pointer.down()
+            if pointer.row not in shown_rows:
+                y_shift += 1
+        elif direction == 'left':
+            pointer.left()
+            if pointer.column not in shown_collumns:
+                x_shift -= 1
+        elif direction == 'right':
+            pointer.right()
+            if pointer.column not in shown_collumns:
+                x_shift += 1
+        update_table()
+        update_r()
+        update_v()
+        update_x()
+        update_columns()
+        update_rows()
+        update_input()
+        update_address()
+
     update_all()
     curses.doupdate()
 
@@ -308,45 +335,13 @@ def main(scr):
             height, width = scr.getmaxyx()
             update_all()
         if user_input == curses.KEY_RIGHT and pointer.column_number < table.column_count:
-            pointer.right()
-            if pointer.column not in shown_collumns:
-                x_shift += 1
-            update_table()
-            update_r()
-            update_x()
-            update_columns()
-            update_input()
-            update_address()
+            move('right')
         if user_input == curses.KEY_LEFT and pointer.column_number > 1:
-            pointer.left()
-            if pointer.column not in shown_collumns:
-                x_shift -= 1
-            update_table()
-            update_r()
-            update_x()
-            update_columns()
-            update_input()
-            update_address()
+            move('left')
         if user_input == curses.KEY_DOWN and pointer.row < table.row_count:
-            pointer.down()
-            if pointer.row not in shown_rows:
-                y_shift += 1
-            update_table()
-            update_v()
-            update_x()
-            update_rows()
-            update_input()
-            update_address()
+            move('down')
         if user_input == curses.KEY_UP and pointer.row > 1:
-            pointer.up()
-            if pointer.row not in shown_rows:
-                y_shift -= 1
-            update_table()
-            update_v()
-            update_x()
-            update_rows()
-            update_input()
-            update_address()
+            move('up')
         if not read_only:
             if user_input in (curses.KEY_ENTER, 10, 13):
                 if info.mode == 'R':
@@ -368,35 +363,25 @@ def main(scr):
                 changes = True
                 update_table_size()
                 update_table()
-                update_r()
-                update_x()
-                update_columns()
+                move('right')
             if user_input == ord('C'):
                 table.insert_column(pointer.column_number - 1)
                 changes = True
                 update_table_size()
                 update_table()
-                update_r()
-                update_x()
-                update_columns()
+                move()
             if user_input == ord('v'):
                 table.insert_row(pointer.row)
                 changes = True
                 update_table_size()
                 update_table()
-                update_v()
-                update_x()
-                update_rows()
-                update_columns()
+                move('down')
             if user_input == ord('V'):
                 table.insert_row(pointer.row - 1)
                 changes = True
                 update_table_size()
                 update_table()
-                update_v()
-                update_x()
-                update_rows()
-                update_columns()
+                move()
         curses.doupdate()
 try:
     curses.wrapper(main)
