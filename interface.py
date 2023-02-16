@@ -278,24 +278,28 @@ def main(scr):
         update_indicator()
         curses.flash()
 
-    def move(direction: str = None):
+    def move(direction: str = None, repeat: int = 1):
         nonlocal x_shift, y_shift
         if direction == 'up':
-            pointer.up()
-            if pointer.row not in shown_rows:
-                y_shift -= 1
+            for i in range(repeat): # pylint: disable=unused-variable
+                pointer.up()
+                if pointer.row not in shown_rows:
+                    y_shift -= 1
         elif direction == 'down':
-            pointer.down()
-            if pointer.row not in shown_rows:
-                y_shift += 1
+            for i in range(repeat):
+                pointer.down()
+                if pointer.row not in shown_rows:
+                    y_shift += 1
         elif direction == 'left':
-            pointer.left()
-            if pointer.column not in shown_collumns:
-                x_shift -= 1
+            for i in range(repeat):
+                pointer.left()
+                if pointer.column not in shown_collumns:
+                    x_shift -= 1
         elif direction == 'right':
-            pointer.right()
-            if pointer.column not in shown_collumns:
-                x_shift += 1
+            for i in range(repeat):
+                pointer.right()
+                if pointer.column not in shown_collumns:
+                    x_shift += 1
         update_table()
         update_r()
         update_v()
@@ -342,6 +346,14 @@ def main(scr):
             move('down')
         if user_input == curses.KEY_UP and pointer.row > 1:
             move('up')
+        if user_input in [curses.KEY_HOME, curses.KEY_SHOME] and pointer.column_number > 1:
+            move('left', pointer.column_number - 1)
+        if user_input in [curses.KEY_END, curses.KEY_SEND] and pointer.column_number < table.column_count:
+            move('right', table.column_count - pointer.column_number)
+        if user_input == curses.KEY_PPAGE and pointer.row > 1:
+            move('up', pointer.row - 1)
+        if user_input == curses.KEY_NPAGE and pointer.row < table.row_count:
+            move('down', table.row_count - pointer.row)
         if not read_only:
             if user_input in (curses.KEY_ENTER, 10, 13):
                 if info.mode == 'R':
