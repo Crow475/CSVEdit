@@ -32,7 +32,7 @@
 - [x] scrolling the table pad
 - [x] scrollable table indicators
 - [x] cell text wrapping
-- [ ] add/remove rows and columns
+- [x] add/remove rows and columns
 - [ ] clipboard Integration
 - [ ] reading settings file
 - [ ] info window
