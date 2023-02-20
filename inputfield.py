@@ -81,6 +81,16 @@ class InputField:
             self.contents.pop(self.cursor_pos - 1)
             self.cursor_left()
 
+    def delete(self):
+        """
+        Removes the character at the cursor's position
+        """
+        if self.contents:
+            try:
+                self.contents.pop(self.cursor_pos)
+            except IndexError:
+                curses.beep()
+
     def gather(self):
         """Returns the contents of InputField object"""
 
@@ -130,7 +140,18 @@ def get_input(window, contents: str = None, CancelReturnsNone: bool = False):
                     curses.KEY_UP,
                     curses.KEY_NPAGE,
                     curses.KEY_PPAGE,
-                    curses.KEY_F0,
+                    curses.KEY_F1,
+                    curses.KEY_F2,
+                    curses.KEY_F3,
+                    curses.KEY_F4,
+                    curses.KEY_F5,
+                    curses.KEY_F6,
+                    curses.KEY_F7,
+                    curses.KEY_F8,
+                    curses.KEY_F9,
+                    curses.KEY_F10,
+                    curses.KEY_F11,
+                    curses.KEY_F12,
                     curses.KEY_RESIZE
                    ]
 
@@ -152,6 +173,8 @@ def get_input(window, contents: str = None, CancelReturnsNone: bool = False):
             input_window.cursor_end()
         if key == curses.KEY_BACKSPACE:
             input_window.backspace()
+        if key == curses.KEY_DC:
+            input_window.delete()
         if key == 27:
             if CancelReturnsNone:
                 return None

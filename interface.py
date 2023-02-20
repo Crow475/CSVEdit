@@ -370,6 +370,10 @@ def main(scr):
                     info.reset_messsage()
                     info.mode = 'R'
                     update_all()
+            if user_input == curses.KEY_DC:
+                table.set_cell(pointer.column, pointer.row, None)
+                changes = True
+                move()
             if user_input == ord('c'):
                 table.insert_column(pointer.column_number)
                 changes = True

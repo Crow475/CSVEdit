@@ -52,8 +52,9 @@ The optional arguments are:
 | end        | Jump to the last cell in the row        |
 | PgUp       | Jump to the top of the column           |
 | PgDn       | Jump to the bottom of the column        |
-| Enter      | Edit the current cell / Confirm changes |
+| enter      | Edit the current cell / Confirm changes |
 | esc        | Cancel action / Discard changes         |
+| delete     | Delete contents of the current cell     |
 | c          | Add an empty column to the right        |
 | C          | Add an empty column to the left         |
 | v          | Add an empty row to the bottom          |
