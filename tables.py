@@ -1,3 +1,8 @@
+"""
+This module is a part of CSVEdit.
+It contains a "Table" class that stores values of any type, and functions
+that allow turning csv files into tables and vice versa.
+"""
 import csv
 from quotesniff import sniff_quoting
 
@@ -23,7 +28,6 @@ def get_column(column):
 class Table:
     """
     A class that stores values of any type in a table,
-    limited to 26 columns (for now)
     """
     def __init__(self, column_count, row_count):
         # Creates an empty (filled with None values) table with
@@ -56,6 +60,7 @@ class Table:
             self.columns[get_column(column)].append(None)
 
     def insert_column(self, column_index: int):
+        """ Inserts an empty column in the table at a given index """
         self.add_column()
         for index in reversed(range(column_index + 1, self.column_count)):
             temp_column = self.columns[get_column(index)]
@@ -63,6 +68,7 @@ class Table:
             self.columns[get_column(index + 1)] = temp_column
 
     def insert_row(self, row_index: int):
+        """ Inserts an empty row in the table at a given index """
         self.add_row()
         for index in reversed(range(row_index, self.row_count - 1)):
             temp_row = []

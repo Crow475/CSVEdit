@@ -1,3 +1,7 @@
+"""
+This module is a part of CSVEdit.
+It contains auxiliary classes that hold various information that is used by the editor.
+"""
 import tables
 
 class Pointer:

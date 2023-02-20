@@ -281,22 +281,22 @@ def main(scr):
     def move(direction: str = None, repeat: int = 1):
         nonlocal x_shift, y_shift
         if direction == 'up':
-            for i in range(repeat): # pylint: disable=unused-variable
+            for _ in range(repeat):
                 pointer.up()
                 if pointer.row not in shown_rows:
                     y_shift -= 1
         elif direction == 'down':
-            for i in range(repeat):
+            for _ in range(repeat):
                 pointer.down()
                 if pointer.row not in shown_rows:
                     y_shift += 1
         elif direction == 'left':
-            for i in range(repeat):
+            for _ in range(repeat):
                 pointer.left()
                 if pointer.column not in shown_collumns:
                     x_shift -= 1
         elif direction == 'right':
-            for i in range(repeat):
+            for _ in range(repeat):
                 pointer.right()
                 if pointer.column not in shown_collumns:
                     x_shift += 1
@@ -355,21 +355,20 @@ def main(scr):
         if user_input == curses.KEY_NPAGE and pointer.row < table.row_count:
             move('down', table.row_count - pointer.row)
         if not read_only:
-            if user_input in (curses.KEY_ENTER, 10, 13):
-                if info.mode == 'R':
-                    info.mode = 'E'
-                    info.set_message(key_hint["confirm"] + key_hint["cancel"], True)
-                    update_info()
-                    update_indicator()
-                    update_input()
-                    update_address()
-                    value = table.get_cell(pointer.column, pointer.row)
-                    value = inputfield.get_input(input_win, value)
-                    table.set_cell(pointer.column, pointer.row, value)
-                    changes = True
-                    info.reset_messsage()
-                    info.mode = 'R'
-                    update_all()
+            if user_input in (curses.KEY_ENTER, 10, 13) and info.mode == 'R':
+                info.mode = 'E'
+                info.set_message(key_hint["confirm"] + key_hint["cancel"], True)
+                update_info()
+                update_indicator()
+                update_input()
+                update_address()
+                value = table.get_cell(pointer.column, pointer.row)
+                value = inputfield.get_input(input_win, value)
+                table.set_cell(pointer.column, pointer.row, value)
+                changes = True
+                info.reset_messsage()
+                info.mode = 'R'
+                update_all()
             if user_input == curses.KEY_DC:
                 table.set_cell(pointer.column, pointer.row, None)
                 changes = True
