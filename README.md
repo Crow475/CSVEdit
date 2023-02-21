@@ -8,6 +8,7 @@ Written in python using curses library.
 
 - Linux or Windows with WSL
 - Python 3.7+
+- pyperclip
 
 ## Installation
 
@@ -59,3 +60,6 @@ The optional arguments are:
 | C          | Add an empty column to the left         |
 | v          | Add an empty row to the bottom          |
 | V          | Add an empty row to the top             |
+| Alt + c    | Copy cell contents to clipboard         |
+| Alt + v    | Paste clipboard contents to the cell    |
+| Alt + x    | Cut cell contents                       |
