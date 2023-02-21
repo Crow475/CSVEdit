@@ -3,52 +3,54 @@
 - [x] automatic csv dialect detection
 - [x] moving pointer
 - [ ] indicator sidebar
-	- [x] mode indication
-	- [x] dialect indication
-	- [x] prompt indication
-	- [x] warning/error indication
-	- [ ] header display indication
+  - [x] mode indication
+  - [x] dialect indication
+  - [x] prompt indication
+  - [x] warning/error indication
+  - [ ] header display indication
 - [x] input field
-	- [x] text wrapping
+  - [x] text wrapping
 - [ ] info bar
-	- [x] edit key
-	- [x] exit key
-	- [ ] save key
-	- [ ] update key
-	- [ ] info key
-	- [ ] save as key (if extended)
-	- [ ] add row (if extended)
-	- [ ] remove row (if extended)
-	- [ ] add column (if extended)
-	- [ ] remove column (if extended)
+  - [x] edit key
+  - [x] exit key
+  - [ ] save key
+  - [ ] update key
+  - [ ] info key
+  - [ ] save as key (if extended)
+  - [ ] add row (if extended)
+  - [ ] remove row (if extended)
+  - [ ] add column (if extended)
+  - [ ] remove column (if extended)
 - [x] custom textbox
-	- [x] scrolling
-	- [x] cursor highlight
-	- [x] backspace
-	- [x] enter
-	- [x] escape
+  - [x] scrolling
+  - [x] cursor highlight
+  - [x] backspace
+  - [x] enter
+  - [x] escape
 - [x] pointer position indicator
 - [x] csv file saving
 - [x] scrolling the table pad
 - [x] scrollable table indicators
 - [x] cell text wrapping
 - [x] add/remove rows and columns
-- [ ] clipboard Integration
+- [x] basic clipboard integration
+- [ ] quoting editing
+- [ ] quotedchar editing
+- [ ] separate launcher
 - [ ] reading settings file
 - [ ] info window
-- [ ] settings file
-	- [ ] pointer style
-	- [ ] visual column delimeters (on/off)
-	- [ ] ? Key bindings
-	- [ ] default dialect
-	- [ ] auto remove last rows and columns if empty
-	- [ ] header display (on/off)
-	- [ ] mutable/immutable headers
-- [ ] optional arguments
-	- [ ] specifying dialect
-	- [ ] verbose
-	- [ ] read-only
-	- [ ] extended info bar
-	- [ ] default settings (safe mode)
-	- [ ] force mutable headers (only if they are immutable by default)
 - [ ] header display
+- [ ] complete clipboard integration
+- [ ] settings file
+  - [ ] pointer style
+  - [ ] visual column delimeters (on/off)
+  - [ ] ? Key bindings
+  - [ ] default dialect
+  - [ ] auto remove last rows and columns if empty
+  - [ ] header display (on/off)
+- [ ] optional arguments
+  - [ ] specifying dialect
+  - [ ] verbose
+  - [ ] read-only
+  - [ ] extended info bar
+  - [ ] default settings (safe mode)

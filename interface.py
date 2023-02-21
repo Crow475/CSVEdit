@@ -3,6 +3,7 @@ import os
 import sys
 import curses
 import argparse
+import pyperclip
 
 import tables
 import inputfield
@@ -68,6 +69,16 @@ def main(scr):
 
     input_win = curses.newwin(1, width - 2, height - 1, 2)
     key_pad = curses.newpad(1, 1)
+
+    def clean(string: str):
+        string = string.strip()
+        returnstring = ""
+        for letter in string:
+            if letter in ["\n", "\r", os.linesep]:
+                returnstring += " "
+            else:
+                returnstring += letter
+        return returnstring
 
     def update_table_size():
         nonlocal table_height, table_width, row_width
@@ -354,6 +365,19 @@ def main(scr):
             move('up', pointer.row - 1)
         if user_input == curses.KEY_NPAGE and pointer.row < table.row_count:
             move('down', table.row_count - pointer.row)
+        if user_input == 27:
+            user_input2 = key_pad.getch()
+            if user_input2 == ord('c'):
+                pyperclip.copy(table.get_cell(pointer.column, pointer.row))
+            if user_input2 == ord('v') and not read_only:
+                changes = True
+                table.set_cell(pointer.column, pointer.row, clean(pyperclip.paste()))
+                move()
+            if user_input2 == ord('x') and not read_only:
+                changes = True
+                pyperclip.copy(table.get_cell(pointer.column, pointer.row))
+                table.set_cell(pointer.column, pointer.row, None)
+                move()
         if not read_only:
             if user_input in (curses.KEY_ENTER, 10, 13) and info.mode == 'R':
                 info.mode = 'E'
