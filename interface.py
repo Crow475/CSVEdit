@@ -16,6 +16,17 @@ key_hint = {'edit':' [RETURN]:edit',
             'update':' [f5]:update',
             }
 
+class KeyValue:
+    q = ord('q')
+    c = ord('c')
+    C = ord('C')
+    v = ord('v')
+    V = ord('V')
+    s = ord('s')
+    x = ord('x')
+
+quoting_ind = ['M', 'A', 'L', 'N']
+
 max_cell_length = 28
 
 argument_parser = argparse.ArgumentParser()
@@ -131,7 +142,6 @@ def main(scr):
 
     def get_quoting_ind(quoting):
         try:
-            quoting_ind = ['M', 'A', 'L', 'N']
             return quoting_ind[quoting]
         except IndexError:
             return ' '
@@ -291,26 +301,27 @@ def main(scr):
 
     def move(direction: str = None, repeat: int = 1):
         nonlocal x_shift, y_shift
-        if direction == 'up':
-            for _ in range(repeat):
-                pointer.up()
-                if pointer.row not in shown_rows:
-                    y_shift -= 1
-        elif direction == 'down':
-            for _ in range(repeat):
-                pointer.down()
-                if pointer.row not in shown_rows:
-                    y_shift += 1
-        elif direction == 'left':
-            for _ in range(repeat):
-                pointer.left()
-                if pointer.column not in shown_collumns:
-                    x_shift -= 1
-        elif direction == 'right':
-            for _ in range(repeat):
-                pointer.right()
-                if pointer.column not in shown_collumns:
-                    x_shift += 1
+        match direction:
+            case 'up' if pointer.row > 1:
+                for _ in range(repeat):
+                    pointer.up()
+                    if pointer.row not in shown_rows:
+                        y_shift -= 1
+            case 'down' if pointer.row < table.row_count:
+                for _ in range(repeat):
+                    pointer.down()
+                    if pointer.row not in shown_rows:
+                        y_shift += 1
+            case 'left' if pointer.column_number > 1:
+                for _ in range(repeat):
+                    pointer.left()
+                    if pointer.column not in shown_collumns:
+                        x_shift -= 1
+            case 'right' if pointer.column_number < table.column_count:
+                for _ in range(repeat):
+                    pointer.right()
+                    if pointer.column not in shown_collumns:
+                        x_shift += 1
         update_table()
         update_r()
         update_v()
@@ -328,99 +339,102 @@ def main(scr):
     while True:
         user_input = key_pad.getch()
         height, width = scr.getmaxyx()
-        if user_input == curses.KEY_F5:
-            update_all()
-        if user_input == ord('q'):
-            if changes:
-                answer = show_prompt("Do you want to save changes to the file?")
-                if answer is True:
-                    result = 2
-                    while result == 2:
-                        result = save_as()
-                    if result == 1:
-                        break
-                if answer is False:
-                    break
-            else:
-                break
-        if user_input == ord('s'):
-            save_as()
-            changes = False
-        if user_input == curses.KEY_RESIZE:
-            height, width = scr.getmaxyx()
-            update_all()
-        if user_input == curses.KEY_RIGHT and pointer.column_number < table.column_count:
-            move('right')
-        if user_input == curses.KEY_LEFT and pointer.column_number > 1:
-            move('left')
-        if user_input == curses.KEY_DOWN and pointer.row < table.row_count:
-            move('down')
-        if user_input == curses.KEY_UP and pointer.row > 1:
-            move('up')
-        if user_input in [curses.KEY_HOME, curses.KEY_SHOME] and pointer.column_number > 1:
-            move('left', pointer.column_number - 1)
-        if user_input in [curses.KEY_END, curses.KEY_SEND] and pointer.column_number < table.column_count:
-            move('right', table.column_count - pointer.column_number)
-        if user_input == curses.KEY_PPAGE and pointer.row > 1:
-            move('up', pointer.row - 1)
-        if user_input == curses.KEY_NPAGE and pointer.row < table.row_count:
-            move('down', table.row_count - pointer.row)
-        if user_input == 27:
-            user_input2 = key_pad.getch()
-            if user_input2 == ord('c'):
-                pyperclip.copy(table.get_cell(pointer.column, pointer.row))
-            if user_input2 == ord('v') and not read_only:
-                changes = True
-                table.set_cell(pointer.column, pointer.row, clean(pyperclip.paste()))
-                move()
-            if user_input2 == ord('x') and not read_only:
-                changes = True
-                pyperclip.copy(table.get_cell(pointer.column, pointer.row))
-                table.set_cell(pointer.column, pointer.row, None)
-                move()
-        if not read_only:
-            if user_input in (curses.KEY_ENTER, 10, 13) and info.mode == 'R':
-                info.mode = 'E'
-                info.set_message(key_hint["confirm"] + key_hint["cancel"], True)
-                update_info()
-                update_indicator()
-                update_input()
-                update_address()
-                value = table.get_cell(pointer.column, pointer.row)
-                value = inputfield.get_input(input_win, value)
-                table.set_cell(pointer.column, pointer.row, value)
-                changes = True
-                info.reset_messsage()
-                info.mode = 'R'
+        match user_input:
+            case curses.KEY_F5:
                 update_all()
-            if user_input == curses.KEY_DC:
-                table.set_cell(pointer.column, pointer.row, None)
-                changes = True
-                move()
-            if user_input == ord('c'):
-                table.insert_column(pointer.column_number)
-                changes = True
-                update_table_size()
-                update_table()
-                move('right')
-            if user_input == ord('C'):
-                table.insert_column(pointer.column_number - 1)
-                changes = True
-                update_table_size()
-                update_table()
-                move()
-            if user_input == ord('v'):
-                table.insert_row(pointer.row)
-                changes = True
-                update_table_size()
-                update_table()
+            case KeyValue.q:
+                if changes:
+                    answer = show_prompt("Do you want to save changes to the file?")
+                    if answer is True:
+                        result = 2
+                        while result == 2:
+                            result = save_as()
+                        if result == 1:
+                            break
+                    if answer is False:
+                        break
+                else:
+                    break
+            case KeyValue.s:
+                save_as()
+                changes = False
+            case curses.KEY_RESIZE:
+                height, width = scr.getmaxyx()
+                update_all()
+            case curses.KEY_UP:
+                move('up')
+            case curses.KEY_DOWN:
                 move('down')
-            if user_input == ord('V'):
-                table.insert_row(pointer.row - 1)
-                changes = True
-                update_table_size()
-                update_table()
-                move()
+            case curses.KEY_LEFT:
+                move('left')
+            case curses.KEY_RIGHT:
+                move('right')
+            case curses.KEY_HOME | curses.KEY_SHOME:
+                move('left', pointer.column_number - 1)
+            case curses.KEY_END | curses.KEY_SEND:
+                move('right', table.column_count - pointer.column_number)
+            case curses.KEY_PPAGE:
+                move('up', pointer.row - 1)
+            case curses.KEY_NPAGE:
+                move('down', table.row_count - pointer.row)
+            case 27:
+                user_input2 = key_pad.getch()
+                match user_input2:
+                    case KeyValue.c:
+                        pyperclip.copy(table.get_cell(pointer.column, pointer.row))
+                    case KeyValue.v if not read_only:
+                        changes = True
+                        table.set_cell(pointer.column, pointer.row, clean(pyperclip.paste()))
+                        move()
+                    case KeyValue.x if not read_only:
+                        changes = True
+                        pyperclip.copy(table.get_cell(pointer.column, pointer.row))
+                        table.set_cell(pointer.column, pointer.row, None)
+                        move()
+        if not read_only:
+            match user_input:
+                case curses.KEY_ENTER | 10 | 13 if info.mode == 'R':
+                    info.mode = 'E'
+                    info.set_message(key_hint["confirm"] + key_hint["cancel"], True)
+                    update_info()
+                    update_indicator()
+                    update_input()
+                    update_address()
+                    value = table.get_cell(pointer.column, pointer.row)
+                    value = inputfield.get_input(input_win, value)
+                    table.set_cell(pointer.column, pointer.row, value)
+                    changes = True
+                    info.reset_messsage()
+                    info.mode = 'R'
+                    update_all()
+                case curses.KEY_DC:
+                    table.set_cell(pointer.column, pointer.row, None)
+                    changes = True
+                    move()
+                case KeyValue.c:
+                    table.insert_column(pointer.column_number)
+                    changes = True
+                    update_table_size()
+                    update_table()
+                    move('right')
+                case KeyValue.v:
+                    table.insert_row(pointer.row)
+                    changes = True
+                    update_table_size()
+                    update_table()
+                    move('down')
+                case KeyValue.C:
+                    table.insert_column(pointer.column_number - 1)
+                    changes = True
+                    update_table_size()
+                    update_table()
+                    move()
+                case KeyValue.V:
+                    table.insert_row(pointer.row - 1)
+                    changes = True
+                    update_table_size()
+                    update_table()
+                    move()
         curses.doupdate()
 try:
     curses.wrapper(main)

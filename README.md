@@ -7,7 +7,7 @@ Written in python using curses library.
 ## Platform requirements
 
 - Linux or Windows with WSL
-- Python 3.7+
+- Python 3.10+
 - pyperclip
 
 ## Installation
