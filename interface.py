@@ -16,17 +16,6 @@ key_hint = {'edit':' [RETURN]:edit',
             'update':' [f5]:update',
             }
 
-class KeyValue:
-    q = ord('q')
-    c = ord('c')
-    C = ord('C')
-    v = ord('v')
-    V = ord('V')
-    s = ord('s')
-    x = ord('x')
-
-quoting_ind = ['M', 'A', 'L', 'N']
-
 max_cell_length = 28
 
 argument_parser = argparse.ArgumentParser()
@@ -142,7 +131,7 @@ def main(scr):
 
     def get_quoting_ind(quoting):
         try:
-            return quoting_ind[quoting]
+            return visuals.QUOTING_INDICATORS[quoting]
         except IndexError:
             return ' '
 
@@ -342,7 +331,7 @@ def main(scr):
         match user_input:
             case curses.KEY_F5:
                 update_all()
-            case KeyValue.q:
+            case visuals.KEY_Q:
                 if changes:
                     answer = show_prompt("Do you want to save changes to the file?")
                     if answer is True:
@@ -355,7 +344,7 @@ def main(scr):
                         break
                 else:
                     break
-            case KeyValue.s:
+            case visuals.KEY_S:
                 save_as()
                 changes = False
             case curses.KEY_RESIZE:
@@ -380,13 +369,13 @@ def main(scr):
             case 27:
                 user_input2 = key_pad.getch()
                 match user_input2:
-                    case KeyValue.c:
+                    case visuals.KEY_C:
                         pyperclip.copy(table.get_cell(pointer.column, pointer.row))
-                    case KeyValue.v if not read_only:
+                    case visuals.KEY_V if not read_only:
                         changes = True
                         table.set_cell(pointer.column, pointer.row, clean(pyperclip.paste()))
                         move()
-                    case KeyValue.x if not read_only:
+                    case visuals.KEY_X if not read_only:
                         changes = True
                         pyperclip.copy(table.get_cell(pointer.column, pointer.row))
                         table.set_cell(pointer.column, pointer.row, None)
@@ -411,25 +400,25 @@ def main(scr):
                     table.set_cell(pointer.column, pointer.row, None)
                     changes = True
                     move()
-                case KeyValue.c:
+                case visuals.KEY_C:
                     table.insert_column(pointer.column_number)
                     changes = True
                     update_table_size()
                     update_table()
                     move('right')
-                case KeyValue.v:
+                case visuals.KEY_V:
                     table.insert_row(pointer.row)
                     changes = True
                     update_table_size()
                     update_table()
                     move('down')
-                case KeyValue.C:
+                case visuals.KEY_SC:
                     table.insert_column(pointer.column_number - 1)
                     changes = True
                     update_table_size()
                     update_table()
                     move()
-                case KeyValue.V:
+                case visuals.KEY_SV:
                     table.insert_row(pointer.row - 1)
                     changes = True
                     update_table_size()

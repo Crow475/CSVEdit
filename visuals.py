@@ -4,6 +4,19 @@ It contains auxiliary classes that hold various information that is used by the 
 """
 import tables
 
+KEY_Q = ord('q')
+KEY_SQ = ord('Q')
+KEY_S = ord('s')
+KEY_SS = ord('S')
+KEY_X = ord('x')
+KEY_SX = ord('X')
+KEY_C = ord('c')
+KEY_SC = ord('C')
+KEY_V = ord('v')
+KEY_SV = ord('V')
+
+QUOTING_INDICATORS = ['M', 'A', 'L', 'N']
+
 class Pointer:
     """
     A class that defines a pointer for the interface.
