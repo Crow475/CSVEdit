@@ -20,8 +20,15 @@ max_cell_length = 28
 
 argument_parser = argparse.ArgumentParser()
 
-argument_parser.add_argument("file_name", help="path to the file", type=str)
-argument_parser.add_argument("-n", "--new", help="create a new file instead of editing", action="store_true")
+argument_parser.add_argument("file_name",
+                             help="path to the file",
+                             type=str
+                            )
+argument_parser.add_argument("-n", "--new",
+                             help="create a new file instead of editing",
+                             action="store_true"
+                            )
+
 arguments = argument_parser.parse_args()
 
 temp_file = arguments.file_name + ".tmp"
@@ -89,6 +96,7 @@ def main(scr):
 
     def save_as():
         nonlocal info
+
         info.set_alert('?', "Save as: " + key_hint["confirm"] + key_hint["cancel"])
         update_all()
         file_path = inputfield.get_input(input_win, absolute_path, CancelReturnsNone= True)
@@ -107,6 +115,7 @@ def main(scr):
 
     def show_error(message: str):
         nonlocal info
+
         info.set_alert('!', message + key_hint["confirm"])
         update_all()
         inputfield.get_input(input_win)
@@ -115,6 +124,7 @@ def main(scr):
 
     def show_prompt(message: str):
         nonlocal info
+
         info.set_alert('?', message + "[y/n]" + key_hint["cancel"])
         update_all()
         answer = inputfield.get_input(input_win)
@@ -290,6 +300,7 @@ def main(scr):
 
     def move(direction: str = None, repeat: int = 1):
         nonlocal x_shift, y_shift
+
         match direction:
             case 'up' if pointer.row > 1:
                 for _ in range(repeat):

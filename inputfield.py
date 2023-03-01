@@ -119,9 +119,9 @@ def get_input(window, contents: str = None, CancelReturnsNone: bool = False):
     The default way to use inputfield.
     Requires a curses window and creates InputField from it.
     Accepts keystrokes, when enter is hit returns the window contents and
-    allows the rest of the main program to continue operation. When escape
+    allows the rest of the program to continue operation. When escape
     is hit returns the original contents, or None if CanceReturnsNone = True.
-    Suports home and end keys, left and right arrow keys and backspace.
+    Suports home and end keys, left and right arrow keys, backspace and delete.
     """
 
     special_keys = [ 10, 13, -1, 27,
