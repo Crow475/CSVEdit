@@ -49,13 +49,13 @@ The optional arguments are:
 | q          | Exit the editor                         |
 | s          | Save the current file as                |
 | arrow keys | Navigate the table                      |
-| home       | Jump to the first cell in the row       |
-| end        | Jump to the last cell in the row        |
+| Home       | Jump to the first cell in the row       |
+| End        | Jump to the last cell in the row        |
 | PgUp       | Jump to the top of the column           |
 | PgDn       | Jump to the bottom of the column        |
-| enter      | Edit the current cell / Confirm changes |
-| esc        | Cancel action / Discard changes         |
-| delete     | Delete contents of the current cell     |
+| Enter      | Edit the current cell / Confirm changes |
+| Esc        | Cancel action / Discard changes         |
+| Delete     | Delete contents of the current cell     |
 | c          | Add an empty column to the right        |
 | C          | Add an empty column to the left         |
 | v          | Add an empty row to the bottom          |

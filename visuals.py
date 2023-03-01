@@ -3,19 +3,36 @@ This module is a part of CSVEdit.
 It contains auxiliary classes that hold various information that is used by the editor.
 """
 import tables
-
-KEY_Q = ord('q')
-KEY_SQ = ord('Q')
-KEY_S = ord('s')
-KEY_SS = ord('S')
-KEY_X = ord('x')
-KEY_SX = ord('X')
-KEY_C = ord('c')
-KEY_SC = ord('C')
-KEY_V = ord('v')
-KEY_SV = ord('V')
+import curses
 
 QUOTING_INDICATORS = ['M', 'A', 'L', 'N']
+
+class Key:
+    def __init__(self, representation: str, key_code: int, *args):
+        self.code = key_code
+        self.text = f"[{representation}]"
+        self.all_codes = [key_code] + list(args)
+
+KEY_Q = Key('q', ord('q'))
+KEY_SQ = Key('Q', ord('Q'))
+KEY_S = Key('s', ord('s'))
+KEY_SS = Key('S', ord('S'))
+KEY_X = Key('x', ord('x'))
+KEY_SX = Key('X', ord('X'))
+KEY_C = Key('c', ord('c'))
+KEY_SC = Key('C', ord('C'))
+KEY_V = Key('v', ord('v'))
+KEY_SV = Key('V', ord('V'))
+
+KEY_ESC = Key('Esc', 27)
+KEY_ENTER = Key('Enter', curses.KEY_ENTER, 13, 10)
+KEY_ALT = Key('Alt', 27)
+KEY_DELETE = Key('Delete', curses.KEY_DC)
+KEY_HOME = Key('Home', curses.KEY_HOME, curses.KEY_SHOME)
+KEY_END = Key('End', curses.KEY_END, curses.KEY_SEND)
+KEY_PGUP = Key('PgUp', curses.KEY_PPAGE)
+KEY_PGDN = Key('PgDn', curses.KEY_NPAGE)
+KEY_F5 = Key('F5', curses.KEY_F5)
 
 class Pointer:
     """

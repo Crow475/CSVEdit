@@ -9,11 +9,11 @@ import tables
 import inputfield
 import visuals
 
-key_hint = {'edit':' [RETURN]:edit',
-            'confirm':' [RETURN]:confirm',
-            'quit':' [q]:quit',
-            'cancel':' [esc]:cancel',
-            'update':' [f5]:update',
+key_hint = {'edit':    f' {visuals.KEY_ENTER.text}:edit',
+            'confirm': f' {visuals.KEY_ENTER.text}:confirm',
+            'quit':    f' {visuals.KEY_Q.text}:quit',
+            'cancel':  f' {visuals.KEY_ESC.text}:cancel',
+            'update':  f' {visuals.KEY_F5.text}:update',
             }
 
 max_cell_length = 28
@@ -340,9 +340,9 @@ def main(scr):
         user_input = key_pad.getch()
         height, width = scr.getmaxyx()
         match user_input:
-            case curses.KEY_F5:
+            case visuals.KEY_F5.code:
                 update_all()
-            case visuals.KEY_Q:
+            case visuals.KEY_Q.code:
                 if changes:
                     answer = show_prompt("Do you want to save changes to the file?")
                     if answer is True:
@@ -355,7 +355,7 @@ def main(scr):
                         break
                 else:
                     break
-            case visuals.KEY_S:
+            case visuals.KEY_S.code:
                 save_as()
                 changes = False
             case curses.KEY_RESIZE:
@@ -373,20 +373,20 @@ def main(scr):
                 move('left', pointer.column_number - 1)
             case curses.KEY_END | curses.KEY_SEND:
                 move('right', table.column_count - pointer.column_number)
-            case curses.KEY_PPAGE:
+            case visuals.KEY_PGUP.code:
                 move('up', pointer.row - 1)
-            case curses.KEY_NPAGE:
+            case visuals.KEY_PGDN.code:
                 move('down', table.row_count - pointer.row)
             case 27:
                 user_input2 = key_pad.getch()
                 match user_input2:
-                    case visuals.KEY_C:
+                    case visuals.KEY_C.code:
                         pyperclip.copy(table.get_cell(pointer.column, pointer.row))
-                    case visuals.KEY_V if not read_only:
+                    case visuals.KEY_V.code if not read_only:
                         changes = True
                         table.set_cell(pointer.column, pointer.row, clean(pyperclip.paste()))
                         move()
-                    case visuals.KEY_X if not read_only:
+                    case visuals.KEY_X.code if not read_only:
                         changes = True
                         pyperclip.copy(table.get_cell(pointer.column, pointer.row))
                         table.set_cell(pointer.column, pointer.row, None)
@@ -407,29 +407,29 @@ def main(scr):
                     info.reset_messsage()
                     info.mode = 'R'
                     update_all()
-                case curses.KEY_DC:
+                case visuals.KEY_DELETE.code:
                     table.set_cell(pointer.column, pointer.row, None)
                     changes = True
                     move()
-                case visuals.KEY_C:
+                case visuals.KEY_C.code:
                     table.insert_column(pointer.column_number)
                     changes = True
                     update_table_size()
                     update_table()
                     move('right')
-                case visuals.KEY_V:
+                case visuals.KEY_V.code:
                     table.insert_row(pointer.row)
                     changes = True
                     update_table_size()
                     update_table()
                     move('down')
-                case visuals.KEY_SC:
+                case visuals.KEY_SC.code:
                     table.insert_column(pointer.column_number - 1)
                     changes = True
                     update_table_size()
                     update_table()
                     move()
-                case visuals.KEY_SV:
+                case visuals.KEY_SV.code:
                     table.insert_row(pointer.row - 1)
                     changes = True
                     update_table_size()
