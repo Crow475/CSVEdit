@@ -20,21 +20,15 @@ You might also need to allow the scripts to execute before using them:
 Editor:
 
 ```bash
-chmod +x interface.py
-```
-
-CSV file generator:
-
-```bash
-chmod +x csvgen.py
+chmod +x csvedit.py
 ```
 
 ## Usage
 
-You can open a csv file in the editor using interface.py from the command line:
+You can open a csv file in the editor using csvedit.py from the command line:
 
 ```bash
-./interface.py example_file.csv
+./csvedit.py example_file.csv
 ```
 
 The optional arguments are:

@@ -130,6 +130,9 @@ def file_open(file_name):
         for row in filereader:
             current_row += 1
             for column, value in enumerate(row):
+                if value == "":
+                    return_table.set_cell(column + 1, current_row, None)
+                    continue
                 return_table.set_cell(column + 1, current_row, value)
 
     return return_table
@@ -146,12 +149,3 @@ def file_save(table: Table, file_name):
                 else:
                     row_out.append(table.get_cell(column, row))
             writer.writerow(row_out)
-
-def file_create(file_name):
-    """
-    Cretes an empty table, corresponding csv file
-    and opens it
-    """
-    table = Table(2, 2)
-    file_save(table, file_name)
-    return file_open(file_name)

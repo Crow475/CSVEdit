@@ -1,55 +1,19 @@
-#!/usr/bin/python3
 import os
-import sys
 import curses
-import argparse
 import pyperclip
 
 import tables
 import inputfield
 import visuals
 
-key_hint = {'edit':    f' {visuals.KEY_ENTER.text}:edit',
-            'confirm': f' {visuals.KEY_ENTER.text}:confirm',
-            'quit':    f' {visuals.KEY_Q.text}:quit',
-            'cancel':  f' {visuals.KEY_ESC.text}:cancel',
-            'update':  f' {visuals.KEY_F5.text}:update',
-            }
+key_hint = {}
+max_cell_length = None
+table = None
+absolute_path = None
+read_only = None
+new_file = False
 
-max_cell_length = 28
-
-argument_parser = argparse.ArgumentParser()
-
-argument_parser.add_argument("file_name",
-                             help="path to the file",
-                             type=str
-                            )
-argument_parser.add_argument("-n", "--new",
-                             help="create a new file instead of editing",
-                             action="store_true"
-                            )
-
-arguments = argument_parser.parse_args()
-
-temp_file = arguments.file_name + ".tmp"
-
-try:
-    table = tables.file_open(arguments.file_name)
-except FileNotFoundError:
-    if not arguments.new:
-        print(f"[Error] No such file: '{arguments.file_name}'")
-        sys.exit(1)
-    table = tables.file_create(temp_file)
-except PermissionError:
-    print(f"[Error] Access denied: '{arguments.file_name}'")
-    sys.exit(2)
-
-read_only = not os.access(arguments.file_name, os.W_OK)
-if arguments.new:
-    read_only = not os.access(temp_file, os.W_OK)
-absolute_path = os.path.abspath(arguments.file_name)
-
-def main(scr):
+def __editor(scr):
     scr.keypad(True)
     scr.clear()
     curses.curs_set(False)
@@ -68,7 +32,10 @@ def main(scr):
     shown_rows = []
     x_shift = 0
     y_shift = 0
+
     changes = False
+    if new_file:
+        changes = True
 
     address = f"({pointer.column:>3}:{pointer.row:<3})"
     row_width = len(str(table.row_count))
@@ -103,8 +70,8 @@ def main(scr):
         if file_path:
             try:
                 tables.file_save(table, file_path)
-                if os.path.exists(temp_file):
-                    os.remove(temp_file)
+                info.reset_alert()
+                update_all()
                 return 1
             except PermissionError:
                 show_error("Error: Access denied")
@@ -436,11 +403,33 @@ def main(scr):
                     update_table()
                     move()
         curses.doupdate()
-try:
-    curses.wrapper(main)
-except Exception as exception:
-    tables.file_save(table, temp_file)
-    raise exception
-if os.path.exists(temp_file):
-    os.remove(temp_file)
-sys.exit(0)
+
+def start(**kwargs):
+    """
+    Starts the editor
+    """
+    global key_hint, max_cell_length, read_only, table, absolute_path, new_file # pylint: disable=W0603
+
+    file_name = kwargs.get("filename")
+    absolute_path = kwargs.get("absolute_path")
+    temp_file = kwargs.get("temp_file")
+    read_only = kwargs.get("read_only")
+    new_file = kwargs.get("new_file")
+    max_cell_length = kwargs.get("cell_size")
+
+    key_hint = {'edit':    f' {visuals.KEY_ENTER.text}:edit',
+                'confirm': f' {visuals.KEY_ENTER.text}:confirm',
+                'quit':    f' {visuals.KEY_Q.text}:quit',
+                'cancel':  f' {visuals.KEY_ESC.text}:cancel',
+                'update':  f' {visuals.KEY_F5.text}:update',
+                }
+
+    table = tables.file_open(file_name)
+
+    try:
+        curses.wrapper(__editor)
+    except Exception as exception:
+        tables.file_save(table, temp_file)
+        raise exception
+    if os.path.exists(temp_file):
+        os.remove(temp_file)
