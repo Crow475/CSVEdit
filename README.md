@@ -54,6 +54,11 @@ The optional arguments are:
 | C          | Add an empty column to the left         |
 | v          | Add an empty row to the bottom          |
 | V          | Add an empty row to the top             |
+| x          | Delete column                           |
+| X          | Force delete column                     |
+| z          | Delete row                              |
+| Z          | Force delete row                        |
+| F5         | Update the screen                       |
 | Alt + c    | Copy cell contents to clipboard         |
 | Alt + v    | Paste clipboard contents to the cell    |
 | Alt + x    | Cut cell contents                       |

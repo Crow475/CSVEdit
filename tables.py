@@ -79,6 +79,51 @@ class Table:
             for column in range(1, self.column_count + 1):
                 self.columns[get_column(column)][index + 1] = temp_row[column - 1]
 
+    def remove_column(self, column_index: int):
+        """Removes a column from a table at a given index"""
+        for index in range(column_index, self.column_count):
+            temp_column = self.columns[get_column(index)]
+            self.columns[get_column(index)] = self.columns[get_column(index + 1)]
+            self.columns[get_column(index + 1)] = temp_column
+        self.columns.pop(get_column(self.column_count), None)
+        self.column_count -= 1
+
+    def remove_row(self, row_index: int):
+        """Removes a row from a table at a given index"""
+        for index in range(row_index - 1, self.row_count - 1):
+            temp_row = []
+            for column in range(1, self.column_count + 1):
+                temp_row.append(self.columns[get_column(column)][index])
+            for column in range(1, self.column_count + 1):
+                self.columns[get_column(column)][index] = self.columns[get_column(column)][index + 1]
+            for column in range(1, self.column_count + 1):
+                self.columns[get_column(column)][index + 1] = temp_row[column - 1]
+        for index in range(self.column_count):
+            self.columns[get_column(index + 1)].pop(self.row_count - 1)
+        self.row_count -= 1
+
+    def column_is_empty(self, column):
+        result = True
+        for index in range(self.row_count):
+            match self.get_cell(column, index + 1):
+                case None | "" :
+                    continue
+                case _:
+                    result = False
+                    break
+        return result
+
+    def row_is_empty(self, row: int):
+        result = True
+        for index in range(self.column_count):
+            match self.get_cell(index + 1, row):
+                case None | "" :
+                    continue
+                case _:
+                    result = False
+                    break
+        return result
+
     def max_len(self, column):
         """Returns the maximum length of the values a column"""
         longest = 1

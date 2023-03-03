@@ -402,6 +402,32 @@ def __editor(scr):
                     update_table_size()
                     update_table()
                     move()
+                case visuals.KEY_X.code if table.column_is_empty(pointer.column) \
+                    or show_prompt(f"Remove column {pointer.column}? "):
+                    table.remove_column(pointer.column_number)
+                    changes = True
+                    update_table_size()
+                    update_table()
+                    move('left')
+                case visuals.KEY_Z.code if table.row_is_empty(pointer.row) \
+                    or show_prompt(f"Remove row {pointer.row}? "):
+                    table.remove_row(pointer.row)
+                    changes = True
+                    update_table_size()
+                    update_table()
+                    move('up')
+                case visuals.KEY_SX.code:
+                    table.remove_column(pointer.column_number)
+                    changes = True
+                    update_table_size()
+                    update_table()
+                    move('left')
+                case visuals.KEY_SZ.code:
+                    table.remove_row(pointer.row)
+                    changes = True
+                    update_table_size()
+                    update_table()
+                    move('up')
         curses.doupdate()
 
 def start(**kwargs):
