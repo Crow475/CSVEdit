@@ -404,6 +404,8 @@ def __editor(scr):
                     move()
                 case visuals.KEY_X.code if table.column_is_empty(pointer.column) \
                     or show_prompt(f"Remove column {pointer.column}? "):
+                    if table.column_count == 2:
+                        table.insert_column(pointer.column_number + 1)
                     table.remove_column(pointer.column_number)
                     changes = True
                     update_table_size()
@@ -411,18 +413,24 @@ def __editor(scr):
                     move('left')
                 case visuals.KEY_Z.code if table.row_is_empty(pointer.row) \
                     or show_prompt(f"Remove row {pointer.row}? "):
+                    if table.row_count == 1:
+                        table.insert_row(pointer.row + 1)
                     table.remove_row(pointer.row)
                     changes = True
                     update_table_size()
                     update_table()
                     move('up')
                 case visuals.KEY_SX.code:
+                    if table.column_count == 2:
+                        table.insert_column(pointer.column_number + 1)
                     table.remove_column(pointer.column_number)
                     changes = True
                     update_table_size()
                     update_table()
                     move('left')
                 case visuals.KEY_SZ.code:
+                    if table.row_count == 1:
+                        table.insert_row(pointer.row + 1)
                     table.remove_row(pointer.row)
                     changes = True
                     update_table_size()
