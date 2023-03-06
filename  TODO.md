@@ -36,7 +36,7 @@
 - [x] basic clipboard integration
 - [ ] quoting editing
 - [ ] quotedchar editing
-- [ ] separate launcher
+- [x] separate launcher script
 - [ ] reading settings file
 - [ ] info window
 - [ ] header display
