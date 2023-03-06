@@ -58,6 +58,7 @@ The optional arguments are:
 | X          | Force delete column                     |
 | z          | Delete row                              |
 | Z          | Force delete row                        |
+| F1         | Show list of keybinds                   |
 | F5         | Update the screen                       |
 | Alt + c    | Copy cell contents to clipboard         |
 | Alt + v    | Paste clipboard contents to the cell    |

@@ -12,13 +12,15 @@ class Editor:
                  table: tables.Table,
                  absolute_path: str,
                  read_only: bool,
-                 new_file: bool):
+                 new_file: bool,
+                 key_bind_table: tables.Table):
         self.key_hint = key_hint
         self.max_cell_length = max_cell_len
         self.table = table
         self.absolute_path = absolute_path
         self.read_only = read_only
         self.new_file = new_file
+        self.key_bind_table = key_bind_table
 
         self.info = visuals.Info(default_message = self.key_hint["edit"] + self.key_hint["quit"] + " ")
         if self.read_only:
@@ -306,6 +308,16 @@ class Editor:
             user_input = key_pad.getch()
             height, width = scr.getmaxyx()
             match user_input:
+                case visuals.KEY_F1.code if self.table != self.key_bind_table:
+                    keybindviewer = Editor(key_hint=self.key_hint,
+                                           max_cell_len=100,
+                                           table=self.key_bind_table,
+                                           absolute_path="",
+                                           read_only=True,
+                                           new_file=False,
+                                           key_bind_table=self.key_bind_table)
+                    keybindviewer.edit(scr)
+                    update_all()
                 case visuals.KEY_F5.code:
                     update_all()
                 case visuals.KEY_Q.code:
@@ -456,13 +468,15 @@ def start(**kwargs):
                 }
 
     table = tables.file_open(file_name)
+    key_bind_table = tables.file_open(kwargs.get("key_bind_file"))
 
     editor = Editor(key_hint=key_hint,
                     max_cell_len=kwargs.get("cell_size"),
                     table=table,
                     absolute_path=kwargs.get("absolute_path"),
                     read_only=kwargs.get("read_only"),
-                    new_file=kwargs.get("new_file"))
+                    new_file=kwargs.get("new_file"),
+                    key_bind_table=key_bind_table)
 
     try:
         curses.wrapper(editor.edit)

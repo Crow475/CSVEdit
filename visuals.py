@@ -34,6 +34,7 @@ KEY_HOME = Key('Home', curses.KEY_HOME, curses.KEY_SHOME)
 KEY_END = Key('End', curses.KEY_END, curses.KEY_SEND)
 KEY_PGUP = Key('PgUp', curses.KEY_PPAGE)
 KEY_PGDN = Key('PgDn', curses.KEY_NPAGE)
+KEY_F1 = Key('F1', curses.KEY_F1)
 KEY_F5 = Key('F5', curses.KEY_F5)
 
 class Pointer:

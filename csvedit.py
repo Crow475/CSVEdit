@@ -26,6 +26,7 @@ parameters = {"filename" : arguments.file_name,
               "read_only" : not os.access(arguments.file_name, os.W_OK),
               "cell_size" : 28,
               "key_mappings" : None,
+              "key_bind_file" : "keybinds.csv"
              }
 
 if arguments.new and not os.path.isfile(arguments.file_name):
